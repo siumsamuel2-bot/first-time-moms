@@ -15,7 +15,7 @@ describe('onboarding state machine', () => {
   it('requires delivery date and type at delivery_details step', () => {
     const state = advanceStep(createInitialState(), {});
     const result = advanceStep(state, {});
-    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors?.length).toBeGreaterThan(0);
   });
 
   it('advances through full flow', () => {
