@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Firstweeks',
-  description: 'Personalized postpartum recovery support for first-time mothers.',
+  description: 'Personalized postpartum recovery support.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

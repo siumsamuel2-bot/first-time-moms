@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-warm-50 text-warm-700 font-sans;
+  }
+
+  /* Prevent zoom on input focus for mobile */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-md shadow-card p-6;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-lg shadow-elevated p-6;
+  }
+
+  .screen-padding {
+    @apply px-6 py-8;
+  }
+
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
