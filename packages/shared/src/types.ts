@@ -10,6 +10,18 @@ export interface RecoveryProfile {
   feedingMethod: FeedingMethod;
   mentalHealthBaseline?: Record<string, unknown>;
   complications?: string[];
+  dataConsent?: boolean;
+  dataConsentVersion?: string;
+  dataConsentGrantedAt?: string;
+  dataConsentRevokedAt?: string;
+}
+
+export interface ConsentRecord {
+  userId: string;
+  granted: boolean;
+  consentVersion: string;
+  timestamp: string;
+  source: 'onboarding' | 'settings';
 }
 
 export interface DailyCheckIn {
@@ -39,6 +51,6 @@ export interface Provider {
 }
 
 export interface OnboardingState {
-  step: 'welcome' | 'delivery_details' | 'mental_health' | 'feeding' | 'complete';
+  step: 'welcome' | 'delivery_details' | 'mental_health' | 'feeding' | 'data_consent' | 'complete';
   profile?: Partial<RecoveryProfile>;
 }

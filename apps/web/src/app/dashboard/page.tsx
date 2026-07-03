@@ -5,6 +5,7 @@ import { Button } from '@/components/Button';
 import { Card, CardBody, CardHeader } from '@/components/Card';
 import { EscalationBanner } from '@/components/EscalationBanner';
 import { ProviderCard } from '@/components/ProviderCard';
+import { CrisisFooter } from '@/components/CrisisFooter';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
@@ -64,6 +65,18 @@ export default function DashboardPage() {
             <Button variant="ghost" size="sm">View resources →</Button>
           </CardBody>
         </Card>
+
+        <Card className={styles.card}>
+          <CardHeader>
+            <h2 className={styles.cardTitle}>Referrals</h2>
+          </CardHeader>
+          <CardBody>
+            <p className={styles.cardText}>Know a new mom? Give her a week of support — and get one for yourself.</p>
+            <Button variant="primary" size="md">
+              Share Firstweeks
+            </Button>
+          </CardBody>
+        </Card>
       </div>
 
       {showProviders && (
@@ -102,6 +115,7 @@ export default function DashboardPage() {
           </Button>
         </section>
       )}
+      <CrisisFooter />
     </main>
   );
 }

@@ -1,12 +1,12 @@
 {
   "name": "firstweeks",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": ["apps/*", "packages/*", "firstweeks-mobile"],
   "scripts": {
     "dev": "npm run dev --workspace=apps/web",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
+    "typecheck": "npm run typecheck --workspace=@firstweeks/web && npm run typecheck --workspace=@firstweeks/ai && npm run typecheck --workspace=@firstweeks/db && npm run typecheck --workspace=@firstweeks/design-system && npm run typecheck --workspace=@firstweeks/shared && npm run typecheck --workspace=firstweeks-mobile",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -17,5 +17,6 @@
     "eslint": "^8.57.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0"
-  }
+  },
+  "nohoist": ["**/firstweeks-mobile/**/@types/react", "**/firstweeks-mobile/**/@types/react-native"]
 }

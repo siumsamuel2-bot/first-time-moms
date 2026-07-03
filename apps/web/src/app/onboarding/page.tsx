@@ -13,13 +13,14 @@ import {
   getAvailableSteps,
   previousStep,
   getCompletionPercentage,
-} from '@firstweeks/shared';
+} from '@firstweeks/shared/onboarding';
 
 const STEPS = [
   { label: 'Welcome' },
   { label: 'Delivery' },
   { label: 'Wellness' },
   { label: 'Feeding' },
+  { label: 'Consent' },
   { label: 'Ready' },
 ];
 
@@ -198,6 +199,46 @@ export default function OnboardingPage() {
             <CardFooter>
               <Button variant="ghost" onClick={handleBack}>Back</Button>
               <Button onClick={handleNext}>Continue</Button>
+            </CardFooter>
+          </>
+        );
+
+      case 'data_consent':
+        return (
+          <>
+            <CardBody>
+              <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--spacing-4)', color: 'var(--color-neutral-800)' }}>
+                Data Consent
+              </h3>
+              <p style={{ fontSize: 'var(--text-base)', color: 'var(--color-neutral-600)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--spacing-4)' }}>
+                We take your privacy seriously. Your health data is encrypted and stored securely.
+                We only use your data to personalize your check-ins and connect you with providers.
+                You can revoke consent at any time in settings.
+              </p>
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-neutral-500)', marginBottom: 'var(--spacing-6)' }}>
+                By continuing, you agree to our <a href="/privacy" style={{ color: 'var(--color-brand-600)', textDecoration: 'underline' }}>Privacy Policy</a> and <a href="/terms" style={{ color: 'var(--color-brand-600)', textDecoration: 'underline' }}>Terms of Service</a>.
+              </p>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-3)', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={data.dataConsent === true}
+                  onChange={(e) => setData({ ...data, dataConsent: e.target.checked })}
+                  style={{ marginTop: 'var(--spacing-1)', width: '1.25rem', height: '1.25rem', accentColor: 'var(--color-brand-500)' }}
+                  required
+                />
+                <span style={{ fontSize: 'var(--text-base)', color: 'var(--color-neutral-700)', lineHeight: 'var(--leading-relaxed)' }}>
+                  I consent to Firstweeks collecting and processing my health data for personalized postpartum support.
+                </span>
+              </label>
+              {errors.length > 0 && (
+                <p style={{ color: 'var(--color-danger-500)', fontSize: 'var(--text-sm)', marginTop: 'var(--spacing-2)' }}>
+                  {errors[0]}
+                </p>
+              )}
+            </CardBody>
+            <CardFooter>
+              <Button variant="ghost" onClick={handleBack}>Back</Button>
+              <Button onClick={handleNext} disabled={data.dataConsent !== true}>Continue</Button>
             </CardFooter>
           </>
         );

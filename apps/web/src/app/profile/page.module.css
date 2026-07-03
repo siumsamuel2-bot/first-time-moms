@@ -1,0 +1,196 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #fafaf9;
+}
+
+.header {
+  padding: 32px 16px 24px;
+  text-align: center;
+  background: #fff;
+  border-bottom: 1px solid #e7e5e4;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1c1917;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #78716c;
+  margin: 0;
+}
+
+.main {
+  flex: 1;
+  padding: 24px 16px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e7e5e4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c1917;
+  margin: 0;
+}
+
+.cardText {
+  font-size: 14px;
+  color: #78716c;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.snapshot {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.snapshotItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.snapshotLabel {
+  font-size: 12px;
+  color: #a8a29e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.snapshotValue {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1c1917;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e7e5e4;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  background: #fff;
+}
+
+.option:hover {
+  background: #fafaf9;
+}
+
+.optionActive {
+  border-color: #a78bfa;
+  background: #f5f3ff;
+}
+
+.radio {
+  width: 16px;
+  height: 16px;
+  accent-color: #7c3aed;
+}
+
+.optionLabel {
+  font-size: 15px;
+  color: #1c1917;
+}
+
+.privacyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f4;
+}
+
+.privacyItem:last-child {
+  border-bottom: none;
+}
+
+.privacyLabel {
+  font-size: 14px;
+  color: #44403c;
+}
+
+.privacyDescription {
+  font-size: 13px;
+  color: #a8a29e;
+  margin: -8px 0 8px;
+  line-height: 1.4;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d6d3d1;
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.toggleSlider::before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background-color: #7c3aed;
+}
+
+.toggleInput:checked + .toggleSlider::before {
+  transform: translateX(20px);
+}
+
+.dangerZone {
+  padding-top: 16px;
+  display: flex;
+  justify-content: center;
+}

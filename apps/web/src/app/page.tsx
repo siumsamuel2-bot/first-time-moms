@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import styles from './page.module.css';
 
 export default function Home() {
   return (
@@ -40,7 +39,7 @@ export default function Home() {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)', alignItems: 'center' }}>
           <Link
-            href="/onboarding"
+            href="/quiz"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -56,13 +55,23 @@ export default function Home() {
               minWidth: 200,
             }}
           >
-            Get started
+            Take the Quiz
+          </Link>
+          <Link
+            href="/onboarding"
+            style={{
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-brand-600)',
+              textDecoration: 'none',
+            }}
+          >
+            Get started with the app
           </Link>
           <Link
             href="/dashboard"
             style={{
               fontSize: 'var(--text-sm)',
-              color: 'var(--color-brand-600)',
+              color: 'var(--color-neutral-500)',
               textDecoration: 'none',
             }}
           >

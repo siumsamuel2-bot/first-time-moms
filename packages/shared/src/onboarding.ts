@@ -9,6 +9,7 @@ const STEP_ORDER: OnboardingStep[] = [
   'delivery_details',
   'mental_health',
   'feeding',
+  'data_consent',
   'complete',
 ];
 
@@ -42,11 +43,16 @@ export function advanceStep(
       };
 
     case 'mental_health':
+      if (!data.mentalHealthBaseline) {
+        errors.push('Mental health baseline is required');
+      }
+      if (errors.length > 0) return { step: 'mental_health', profile, errors };
+
       return {
         step: 'feeding',
         profile: {
           ...profile,
-          mentalHealthBaseline: data.mentalHealthBaseline as Record<string, unknown> | undefined,
+          mentalHealthBaseline: data.mentalHealthBaseline as Record<string, unknown>,
         },
       };
 
@@ -55,12 +61,31 @@ export function advanceStep(
       if (errors.length > 0) return { step: 'feeding', profile, errors };
 
       return {
-        step: 'complete',
+        step: 'data_consent',
         profile: {
           ...profile,
           feedingMethod: data.feedingMethod as FeedingMethod,
         },
       };
+
+    case 'data_consent': {
+      if (typeof data.dataConsent !== 'boolean') {
+        errors.push('Data consent decision is required');
+      }
+      if (errors.length > 0) return { step: 'data_consent', profile, errors };
+
+      const consentGranted = data.dataConsent === true;
+      const now = new Date().toISOString();
+      return {
+        step: 'complete',
+        profile: {
+          ...profile,
+          dataConsent: consentGranted,
+          dataConsentVersion: '1.0',
+          dataConsentGrantedAt: consentGranted ? now : undefined,
+        },
+      };
+    }
 
     case 'complete':
       return { step: 'complete', profile };

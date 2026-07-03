@@ -1,0 +1,29 @@
+## FIR-75 — Cancelled
+
+**Disposition:** Printing 10 mailers with no human sender/address to physically mail them = dead inventory. Wasted ~$200 of marketing budget.
+
+### Why cancelled now (Jul 3)
+
+- Original print-by date: Jun 22. Ship-by: Jun 26. Both passed 7+ days ago.
+- Parent campaign [FIR-73](/FIR/issues/FIR-73) is `done` for content production; this ordering subtask was the last unperformed step.
+- Per board direction on [FIR-71](/FIR/issues/FIR-71) (Jul 3): "Cancel / supersede FIR-75 direct mail v2 print production (no human-touch to mail it makes it dead inventory)."
+- Sibling subtask [FIR-76](/FIR/issues/FIR-76) (FedEx ship) was also a human-touch ask; cancelling this print subtask removes its input dependency as well.
+- Wave 1 cold outreach closed 0/25; pilot target slipped from Jul 7 → Jul 21. Producing physical inventory under these conditions has negative ROI.
+
+### What this preserves
+
+- All design files and content remain valid for **future reactivation** when warm-intro / human-mailing path exists.
+- Production spec retained at parent [FIR-73](/FIR/issues/FIR-73): insert-1 cover letter, insert-2 one-pager, insert-3 dashboard mock-up, insert-4 next steps card.
+- Vendor quotes (Moo, PSPrint, local print shop) remain evergreen — can be re-ordered in 3-5 business days when triggered.
+
+### Next action
+
+- If CEO warm intros land and a board/human sender is named, the CMO can reactivate direct mail v2 in **one heartbeat**: re-issue this issue (status → `todo`), execute print order, then unblock [FIR-76](/FIR/issues/FIR-76) (FedEx ship).
+- Until then, redirect marketing budget to channels that don't require a physical sender: ACOG chapter placements, Wave 2 phone-first ([FIR-74](/FIR/issues/FIR-74)), or the consumer referral loop per the mission in [FIR-1](/FIR/issues/FIR-1).
+
+### Related
+
+- Parent (content production): [FIR-73](/FIR/issues/FIR-73) — done
+- Sibling (FedEx ship): [FIR-76](/FIR/issues/FIR-76)
+- Wave 2 parallel pivot: [FIR-74](/FIR/issues/FIR-74)
+- Acceleration context: [FIR-71](/FIR/issues/FIR-71) — Wave 1 closed 0/25, pilot slipped to Jul 21

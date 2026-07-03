@@ -6,6 +6,7 @@ import { Button } from '../../components/Button';
 import { MoodSelector } from '../../components/MoodSelector';
 import { QuestionCard } from '../../components/QuestionCard';
 import { ProgressBar } from '../../components/ProgressBar';
+import { CrisisFooter } from '../../components/CrisisFooter';
 import { EscalationBanner } from '../../components/EscalationBanner';
 
 const SYMPTOM_OPTIONS = [
@@ -167,6 +168,7 @@ export default function CheckInPage() {
           </div>
         )}
       </div>
+      <CrisisFooter />
     </div>
   );
 }

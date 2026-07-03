@@ -20,9 +20,12 @@ export const recoveryProfiles = pgTable('recovery_profiles', {
   userId: uuid('user_id').notNull(),
   deliveryDate: date('delivery_date').notNull(),
   deliveryType: deliveryTypeEnum('delivery_type').notNull(),
-  feedingMethod: feedingMethodEnum('feeding_method').notNull(),
+  feedingMethod: feedingMethodEnum('feeding_method'),
   mentalHealthBaseline: jsonb('mental_health_baseline'),
   complications: text('complications').array(),
+  dataConsent: text('data_consent').default('false'),
+  dataConsentVersion: text('data_consent_version'),
+  dataConsentGrantedAt: timestamp('data_consent_granted_at'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -67,5 +70,31 @@ export const auditLogs = pgTable('audit_logs', {
   resourceType: text('resource_type').notNull(),
   resourceId: uuid('resource_id'),
   details: jsonb('details'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const riskLevelEnum = pgEnum('risk_level', ['low', 'moderate', 'high', 'urgent']);
+
+export const quizResults = pgTable('quiz_results', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  answers: text('answers').notNull(),
+  riskLevel: riskLevelEnum('risk_level').notNull(),
+  summary: text('summary').notNull(),
+  recommendations: text('recommendations').array(),
+  nextSteps: text('next_steps').array(),
+  email: text('email'),
+  name: text('name'),
+  referralCode: text('referral_code'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const referralStatusEnum = pgEnum('referral_status', ['pending', 'completed', 'expired', 'fraud']);
+
+export const referrals = pgTable('referrals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  referrerCode: text('referrer_code').notNull(),
+  referredEmail: text('referred_email').notNull(),
+  status: referralStatusEnum('status').notNull().default('pending'),
+  rewardClaimed: text('reward_claimed').default('false'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });

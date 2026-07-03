@@ -25,7 +25,6 @@ export function Slider({
   className,
 }: SliderProps) {
   const id = useId();
-  const pct = ((value - min) / (max - min)) * 100;
 
   return (
     <div className={cn("space-y-2", className)}>

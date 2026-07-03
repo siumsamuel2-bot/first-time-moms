@@ -1,43 +1,78 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { triageSymptoms, shouldEscalate } from '@firstweeks/ai';
-import type { TriageInput, TriageResult } from '@firstweeks/ai';
+import type { TriageInput } from '@firstweeks/ai';
+import { auth } from '@/lib/auth';
+import { audit, auditContextFromRequest } from '@firstweeks/shared/audit';
+import { createCheckIn, getCheckInsByProfile, getEscalations } from '@firstweeks/db/check-in';
+import { getCheckInsForProfileBetween } from '@firstweeks/db/check-in';
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const ctx = auditContextFromRequest(req, session.user.id);
+
   const body = await req.json();
   const { responses, profileId } = body;
 
-  if (!responses) {
-    return NextResponse.json({ error: 'Missing check-in responses' }, { status: 400 });
+  if (!responses || !profileId) {
+    return NextResponse.json({ error: 'Missing check-in responses or profileId' }, { status: 400 });
   }
 
-  const triageInput: TriageInput = {
-    symptoms: responses.symptoms ?? [],
-    durationDays: responses.durationDays ?? 1,
-    sleepDisruption: responses.sleepDisruption ?? 'none',
-    moodScore: responses.moodScore ?? 5,
-    physicalPain: responses.physicalPain ?? 0,
-    bleedingSeverity: responses.bleedingSeverity ?? 'normal',
-  };
-
-  const triageResult: TriageResult = triageSymptoms(triageInput);
-  const escalate = shouldEscalate(triageResult, responses.consecutiveDays ?? 0);
+  const result = await createCheckIn(profileId, responses, ctx);
 
   return NextResponse.json({
-    profileId,
-    checkInDate: new Date().toISOString().split('T')[0],
-    triage: triageResult,
-    escalate,
-    action: escalate ? 'warm_referral' : 'routine_monitoring',
+    checkInId: result.checkIn.id,
+    checkInDate: result.checkIn.checkInDate,
+    triage: result.triage,
+    escalate: result.escalate,
+    escalationCreated: result.escalationCreated,
+    action: result.escalate ? 'warm_referral' : 'routine_monitoring',
   });
 }
 
 export async function GET(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(req.url);
   const profileId = searchParams.get('profileId');
   const date = searchParams.get('date');
 
+  const ctx = auditContextFromRequest(req, session.user.id);
+
+  if (profileId) {
+    let history;
+    if (date) {
+      const from = new Date(date);
+      const to = new Date(date);
+      history = await getCheckInsForProfileBetween(profileId, from, to);
+    } else {
+      history = await getCheckInsByProfile(profileId);
+    }
+
+    audit(ctx, {
+      action: 'READ',
+      resourceType: 'daily_check_ins',
+      resourceId: profileId,
+      details: { count: history.length, date: date ?? 'all' },
+    });
+
+    return NextResponse.json({ items: history, total: history.length });
+  }
+
+  // Default: return today's question set
+  audit(ctx, {
+    action: 'READ',
+    resourceType: 'daily_check_ins',
+    details: { date: date ?? new Date().toISOString().split('T')[0] },
+  });
+
   return NextResponse.json({
-    profileId,
     date: date ?? new Date().toISOString().split('T')[0],
     questions: [
       { id: 'q1', text: 'How is your pain level today? (0-10)', type: 'scale' },

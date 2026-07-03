@@ -1,2 +1,2 @@
-export * from './types';
-export * from './onboarding';
+export * from './encryption';
+export * from './audit';
