@@ -19,6 +19,6 @@ function getPool() {
   return _pool;
 }
 
-export const db = drizzle({ client: getPool(), schema });
+export const db = drizzle(getPool(), { schema });
 export * from './schema';
 export type DB = typeof db;

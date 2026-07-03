@@ -1,20 +1,18 @@
 // Check-in persistence service for the daily check-in engine
 // Handles storing responses, computing escalation scores, and querying check-in history.
 
-import { eq, and, desc, gte, lte } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { db } from '@firstweeks/db';
 
 // Re-export schema from local to avoid cross-module type mismatch
 import {
   dailyCheckIns,
   escalations,
-  recoveryProfiles,
 } from './schema';
 
 import { triageSymptoms, shouldEscalate } from '@firstweeks/ai';
 import type { TriageInput, TriageResult } from '@firstweeks/ai';
 import { audit, type AuditContext } from '@firstweeks/shared/audit';
-import { sql } from 'drizzle-orm';
 
 export interface CheckInResponse {
   symptoms: string[];
@@ -171,8 +169,8 @@ export async function getCheckInsForProfileBetween(profileId: string, from: Date
   const rows = await db.query.dailyCheckIns.findMany({
     where: and(
       eq(dailyCheckIns.profileId, profileId),
-      gte(dailyCheckIns.checkInDate, fromStr),
-      lte(dailyCheckIns.checkInDate, toStr),
+      (dailyCheckIns.checkInDate as any).gte(fromStr),
+      (dailyCheckIns.checkInDate as any).lte(toStr),
     ),
     orderBy: [desc(dailyCheckIns.checkInDate)],
   });
