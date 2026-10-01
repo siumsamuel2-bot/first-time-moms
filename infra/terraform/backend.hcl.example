@@ -1,0 +1,11 @@
+# Copy to backend.hcl and fill in real values, then run:
+#   terraform init -backend-config=backend.hcl
+#
+# Remote state lives in OCI Object Storage (free tier: 20 GB, state file is tiny).
+# The OCI backend does not support native state locking — avoid concurrent applies
+# (coordinate via this runbook; only the CTO applies).
+
+bucket    = "firstweeks-terraform-state"
+namespace = "<your-tenancy-objectstorage-namespace>"
+region    = "us-ashburn-1"
+key       = "staging/terraform.tfstate"

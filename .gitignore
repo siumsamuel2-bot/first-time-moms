@@ -34,3 +34,15 @@ coverage/
 # Misc
 *.tsbuildinfo
 next-env.d.ts
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+*.tfvars
+!terraform.tfvars.example
+*.auto.tfvars
+!backend.hcl.example
+*.pem
+*.key
