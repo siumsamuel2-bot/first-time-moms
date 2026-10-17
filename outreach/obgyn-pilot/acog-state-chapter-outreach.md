@@ -134,15 +134,15 @@ To learn more or express interest, contact [pilot@firstweeks.health](mailto:pilo
 ## ACOG Outreach Pipeline Tracker
 
 | # | Chapter | Contact | Title | Email | Sent | Response | Article Submitted? | Meeting Scheduled? | Notes |
-|---|---------|---------|-------|-------|------|----------|-------------------|-------------------|-------|
-| 1 | District II (NY) | TBD | Exec Director | TBD | ☐ | ☐ | ☐ | ☐ | Bloom Womens Health tie-in |
-| 2 | District VI (IL) | TBD | Exec Director | TBD | ☐ | ☐ | ☐ | ☐ | Assoc. in Womens Health tie-in |
-| 3 | District IV (GA) | TBD | Exec Director | TBD | ☐ | ☐ | ☐ | ☐ | Summit Womens Care tie-in |
-| 4 | District IV (MD/DC) | TBD | Administrator | TBD | ☐ | ☐ | ☐ | ☐ | Womens Health Ctr Rockville tie-in |
-| 5 | District VIII (CA) | TBD | Exec Director | TBD | ☐ | ☐ | ☐ | ☐ | Pacific Womens Healthcare tie-in |
-| 6 | District IV (NC) | TBD | Administrator | TBD | ☐ | ☐ | ☐ | ☐ | Capital City / Carolina tie-in |
-| 7 | District VIII (WA) | TBD | Exec Director | TBD | ☐ | ☐ | ☐ | ☐ | University OB/GYN tie-in |
-| 8 | District VIII (CO) | TBD | Exec Director | TBD | ☐ | ☐ | ☐ | ☐ | Boulder Womens Care tie-in |
+|--|---------|---------|-------|-------|------|----------|-------------------|-------------------|-------|
+| 1 | District II (NY) | Christa Christakis | Exec Director | cchristakis@acog.org | ☐ | ☐ | ☐ | ☐ | Bloom Womens Health tie-in. Phone: (212) 248-5500 |
+| 2 | District VI (IL) | TBD | Exec Director | via acog.org/district-vi/contact | ☐ | ☐ | ☐ | ☐ | Assoc. in Womens Health tie-in. General: marketing@acog.org |
+| 3 | District IV (GA) | TBD | Administrator | district4@acog.org | ☐ | ☐ | ☐ | ☐ | Summit Womens Care tie-in |
+| 4 | District IV (MD/DC) | TBD | Administrator | district4@acog.org | ☐ | ☐ | ☐ | ☐ | Womens Health Ctr Rockville tie-in |
+| 5 | District VIII (CA) | Margaret Merritt | Exec Director | margaret.merritt@acog.org | ☐ | ☐ | ☐ | ☐ | Pacific Womens Healthcare tie-in. Phone: (916) 761-3448 |
+| 6 | District IV (NC) | TBD | Administrator | district4@acog.org | ☐ | ☐ | ☐ | ☐ | Capital City / Carolina tie-in |
+| 7 | District VIII (WA) | Margaret Merritt | Exec Director | margaret.merritt@acog.org | ☐ | ☐ | ☐ | ☐ | University OB/GYN tie-in |
+| 8 | District VIII (CO) | Margaret Merritt | Exec Director | margaret.merritt@acog.org | ☐ | ☐ | ☐ | ☐ | Boulder Womens Care tie-in |
 
 ---
 
@@ -154,7 +154,7 @@ To learn more or express interest, contact [pilot@firstweeks.health](mailto:pilo
 - [x] Draft 400-word clinical article
 - [x] Draft meeting presentation pitch
 - [x] Create pipeline tracker (this document)
-- [ ] Research and fill contact names/emails for all 8 target chapters (Jun 21)
+- [x] Research and fill contact names/emails for all 8 target chapters (Jul 8) — 3 of 8 contacts identified
 
 ### Wave 1 — Top Priority Chapters (Jun 22)
 | Time | Action | Owner |

@@ -10,7 +10,10 @@ import styles from './page.module.css';
 
 export default function DashboardPage() {
   const [showProviders, setShowProviders] = useState(false);
-  const hasActiveEscalation = true;
+  const [hasActiveEscalation] = useState(true);
+  const [dismissedEscalation, setDismissedEscalation] = useState(false);
+
+  const displayEscalation = hasActiveEscalation && !showProviders && !dismissedEscalation;
 
   return (
     <main className={styles.page}>
@@ -21,13 +24,28 @@ export default function DashboardPage() {
         </time>
       </div>
 
-      {hasActiveEscalation && !showProviders && (
+      {displayEscalation && (
         <EscalationBanner
-          severity="medium"
-          message="We noticed you've had a few tough days in a row. Your responses suggest it might help to connect with someone who specializes in maternal mental health."
-          actionLabel="See your options"
-          onAction={() => setShowProviders(true)}
+          severity="moderate"
+          headline="We noticed things have been a bit tougher this week"
+          body="You are not alone — many new mothers go through this."
+          primaryCta="See your options"
+          onPrimaryAction={() => setShowProviders(true)}
         />
+      )}
+
+      {dismissedEscalation && hasActiveEscalation && !showProviders && (
+        <Card className={styles.card}>
+          <CardHeader>
+            <h2 className={styles.cardTitle}>Support available</h2>
+          </CardHeader>
+          <CardBody>
+            <p className={styles.cardText}>If you change your mind, support is always available from your dashboard.</p>
+            <Button variant="ghost" size="sm" onClick={() => setShowProviders(true)}>
+              Get Support
+            </Button>
+          </CardBody>
+        </Card>
       )}
 
       <div className={styles.grid}>

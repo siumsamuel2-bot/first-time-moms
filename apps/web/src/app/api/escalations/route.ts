@@ -12,16 +12,16 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get('status');
 
-  const escalations = await getEscalations(status as any ?? undefined);
+  const allEscalations = await getEscalations(status as any ?? undefined);
 
   const ctx = auditContextFromRequest(req, session.user.id as string);
   audit(ctx, {
     action: 'READ',
     resourceType: 'escalations',
-    details: { count: escalations.length, status: status ?? 'all' },
+    details: { count: allEscalations.length, status: status ?? 'all' },
   });
 
-  const alerts = escalations.map((e) => ({
+  const alerts = allEscalations.map((e) => ({
     id: e.id,
     patientId: e.profileId,
     severity: e.severity,

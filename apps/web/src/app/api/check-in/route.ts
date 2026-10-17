@@ -1,10 +1,51 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { triageSymptoms, shouldEscalate } from '@firstweeks/ai';
-import type { TriageInput } from '@firstweeks/ai';
 import { auth } from '@/lib/auth';
 import { audit, auditContextFromRequest } from '@firstweeks/shared/audit';
-import { createCheckIn, getCheckInsByProfile, getEscalations } from '@firstweeks/db/check-in';
-import { getCheckInsForProfileBetween } from '@firstweeks/db/check-in';
+import { createCheckIn, getCheckInsByProfile, getCheckInsForProfileBetween } from '@firstweeks/db/check-in';
+
+const EPDS_SHORT = [
+  { id: 'ableToLaugh', question: 'I have been able to laugh and see the funny side of things' },
+  { id: 'anxious', question: 'I have felt anxious or worried for no good reason' },
+];
+
+function mapMoodAnswersToScore(moodAnswers: Record<string, number>): number {
+  const values = Object.values(moodAnswers).filter(
+    (v) => typeof v === 'number' && v >= 0 && v <= 3,
+  );
+  if (values.length === 0) return 0;
+  const total = values.reduce((sum, v) => sum + v, 0);
+  // EPDS short has 2 questions max, total 0-6; convert to 0-10 scale
+  return Math.round((total / 6) * 10);
+}
+
+function mapSleepDisruption(troubleSleeping: string): 'none' | 'mild' | 'moderate' | 'severe' {
+  if (troubleSleeping === 'No') return 'none';
+  if (troubleSleeping === 'Yes') return 'moderate';
+  return 'none';
+}
+
+function mapCheckInData(data: {
+  physicalComfort: number;
+  sleepHours: number;
+  troubleSleeping: string;
+  moodAnswers: Record<string, number>;
+  comment: string;
+}): { responses: Parameters<typeof createCheckIn>[1]; profileId: string } {
+  const responses = {
+    symptoms: [],
+    durationDays: data.sleepHours,
+    sleepDisruption: mapSleepDisruption(data.troubleSleeping),
+    moodScore: mapMoodAnswersToScore(data.moodAnswers),
+    physicalPain: data.physicalComfort,
+    bleedingSeverity: 'normal',
+    consecutiveDays: 0,
+  } as Parameters<typeof createCheckIn>[1];
+
+  return {
+    responses,
+    profileId: data.profileId,
+  };
+}
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -15,13 +56,21 @@ export async function POST(req: NextRequest) {
   const ctx = auditContextFromRequest(req, session.user.id);
 
   const body = await req.json();
-  const { responses, profileId } = body;
+  const { profileId, physicalComfort, sleepHours, troubleSleeping, moodAnswers, comment } = body;
 
-  if (!responses || !profileId) {
-    return NextResponse.json({ error: 'Missing check-in responses or profileId' }, { status: 400 });
+  if (!profileId) {
+    return NextResponse.json({ error: 'Missing profileId' }, { status: 400 });
   }
 
-  const result = await createCheckIn(profileId, responses, ctx);
+  const mapped = mapCheckInData({
+    physicalComfort,
+    sleepHours,
+    troubleSleeping,
+    moodAnswers,
+    comment,
+  });
+
+  const result = await createCheckIn(profileId, mapped.responses, ctx);
 
   return NextResponse.json({
     checkInId: result.checkIn.id,

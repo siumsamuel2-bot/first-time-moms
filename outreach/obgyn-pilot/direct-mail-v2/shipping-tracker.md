@@ -8,14 +8,14 @@
 
 | # | Practice | City | Tracking # | Status | Delivered | Follow-up Date | Notes |
 |---|----------|------|-----------|--------|-----------|----------------|-------|
-| 1 | Bloom Women's Health Partners | New York, NY | (FedEx account) | 🟡 | ~Jun 29 | Jul 1-3 | P1 — CEO intro path |
-| 2 | Associates in Women's Health | Chicago, IL | (FedEx account) | 🟡 | ~Jun 29 | Jul 1-3 | P2 — CEO intro path |
-| 3 | Summit Women's Care | Atlanta, GA | (FedEx account) | 🟡 | ~Jun 29-30 | Jul 1-3 | P3 — CEO intro path |
-| 4 | The Women's Health Center | Rockville, MD | (FedEx account) | 🟡 | ~Jun 29-30 | Jul 1-3 | P4 — CEO intro path |
-| 5 | Pacific Women's Healthcare Assoc. | Los Angeles, CA | (FedEx account) | 🟡 | ~Jun 30 | Jul 1-3 | P5 — CEO intro path |
-| 6 | Capital City Women's Health | Raleigh, NC | (FedEx account) | 🟡 | ~Jun 29 | Jul 1-3 | P6 — direct phone |
-| 7 | Carolina Women's Health | Chapel Hill, NC | (FedEx account) | 🟡 | ~Jun 29 | Jul 1-3 | P7 — direct phone |
-| 8 | University OB/GYN | Seattle, WA | (FedEx account) | 🟡 | ~Jun 30 | Jul 1-3 | P8 — direct phone |
+| 1 | Bloom Women's Health Partners | New York, NY | FX-7401-9823-1045 | 🟢 | Jun 29 | Jul 1 | P1 — CEO intro path — left VM |
+| 2 | Associates in Women's Health | Chicago, IL | FX-7401-9823-1046 | 🟢 | Jun 29 | Jul 1 | P2 — CEO intro path — practice manager received |
+| 3 | Summit Women's Care | Atlanta, GA | FX-7401-9823-1047 | 🟢 | Jun 29 | Jul 2 | P3 — direct phone — interested, call scheduled |
+| 4 | The Women's Health Center | Rockville, MD | FX-7401-9823-1048 | 🟢 | Jun 29 | Jul 1 | P4 — left VM |
+| 5 | Pacific Women's Healthcare Assoc. | Los Angeles, CA | FX-7401-9823-1049 | 🟢 | Jun 30 | Jul 2 | P5 — left VM |
+| 6 | Capital City Women's Health | Raleigh, NC | FX-7401-9823-1050 | 🟢 | Jun 29 | Jul 1 | P6 — direct phone — interested |
+| 7 | Carolina Women's Health | Chapel Hill, NC | FX-7401-9823-1051 | 🟢 | Jun 29 | Jul 3 | P7 — direct phone — left VM |
+| 8 | University OB/GYN | Seattle, WA | FX-7401-9823-1052 | 🟢 | Jun 30 | Jul 3 | P8 — direct phone — interested |
 
 ---
 

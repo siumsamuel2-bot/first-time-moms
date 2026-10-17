@@ -7,8 +7,9 @@ export type OnboardingStep = OnboardingState['step'];
 const STEP_ORDER: OnboardingStep[] = [
   'welcome',
   'delivery_details',
-  'mental_health',
   'feeding',
+  'mental_health',
+  'check_in_time',
   'data_consent',
   'complete',
 ];
@@ -33,26 +34,17 @@ export function advanceStep(
       if (!data.deliveryType) errors.push('Delivery type is required');
       if (errors.length > 0) return { step: 'delivery_details', profile, errors };
 
-      return {
-        step: 'mental_health',
-        profile: {
-          ...profile,
-          deliveryDate: data.deliveryDate as string,
-          deliveryType: data.deliveryType as DeliveryType,
-        },
-      };
-
-    case 'mental_health':
-      if (!data.mentalHealthBaseline) {
-        errors.push('Mental health baseline is required');
-      }
-      if (errors.length > 0) return { step: 'mental_health', profile, errors };
+      const deliveryType = data.deliveryType as DeliveryType;
+      const isHigherTouch = deliveryType === 'emergency_c_section';
 
       return {
         step: 'feeding',
         profile: {
           ...profile,
-          mentalHealthBaseline: data.mentalHealthBaseline as Record<string, unknown>,
+          deliveryDate: data.deliveryDate as string,
+          deliveryType,
+          complications: data.complications as string[] | undefined,
+          monitoringTier: isHigherTouch ? 'higher_touch' : 'standard',
         },
       };
 
@@ -61,10 +53,47 @@ export function advanceStep(
       if (errors.length > 0) return { step: 'feeding', profile, errors };
 
       return {
-        step: 'data_consent',
+        step: 'mental_health',
         profile: {
           ...profile,
           feedingMethod: data.feedingMethod as FeedingMethod,
+          feedingChallenges: data.feedingChallenges as string | undefined,
+        },
+      };
+
+    case 'mental_health':
+      if (data.skippedMentalHealth) {
+        return {
+          step: 'check_in_time',
+          profile,
+        };
+      }
+      if (!data.mentalHealthBaseline) {
+        errors.push('Mental health baseline is required');
+      }
+      if (errors.length > 0) return { step: 'mental_health', profile, errors };
+
+      const epds = data.mentalHealthBaseline as Record<string, number>;
+      const epdsScore = Object.values(epds).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+      const flagged = epdsScore >= 10;
+
+      return {
+        step: 'check_in_time',
+        profile: {
+          ...profile,
+          mentalHealthBaseline: epds,
+          epdsBaselineScore: epdsScore,
+          epdsFlagged: flagged,
+        },
+      };
+
+    case 'check_in_time':
+      return {
+        step: 'data_consent',
+        profile: {
+          ...profile,
+          checkInTime: data.checkInTime as string | undefined,
+          smsBackup: data.smsBackup as boolean | undefined,
         },
       };
 

@@ -21,6 +21,18 @@ export function Button({
     style,
   ];
 
+  const textStyle = variant === 'primary' ? styles.primaryText
+    : variant === 'secondary' ? styles.secondaryText
+    : variant === 'ghost' ? styles.ghostText
+    : variant === 'danger' ? styles.dangerText
+    : styles.primaryText;
+
+  const sizeTextStyle = size === 'sm' ? styles.smText
+    : size === 'md' ? styles.mdText
+    : size === 'lg' ? styles.lgText
+    : size === 'xl' ? styles.xlText
+    : styles.mdText;
+
   return (
     <Pressable
       onPress={onPress}
@@ -32,7 +44,7 @@ export function Button({
       android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
       {...props}
     >
-      <Text style={[styles.text, styles[variant + 'Text'], styles[size + 'Text']}>
+      <Text style={[styles.text, textStyle, sizeTextStyle]}>
         {children}
       </Text>
     </Pressable>

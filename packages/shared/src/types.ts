@@ -8,8 +8,14 @@ export interface RecoveryProfile {
   deliveryDate: string;
   deliveryType: DeliveryType;
   feedingMethod: FeedingMethod;
+  feedingChallenges?: string;
   mentalHealthBaseline?: Record<string, unknown>;
+  epdsBaselineScore?: number;
+  epdsFlagged?: boolean;
+  monitoringTier?: 'standard' | 'higher_touch';
   complications?: string[];
+  checkInTime?: string;
+  smsBackup?: boolean;
   dataConsent?: boolean;
   dataConsentVersion?: string;
   dataConsentGrantedAt?: string;
@@ -47,10 +53,25 @@ export interface Provider {
   id: string;
   name: string;
   specialty: string;
+  location: string;
   acceptingNewPatients: boolean;
+  distance?: number;
 }
 
 export interface OnboardingState {
-  step: 'welcome' | 'delivery_details' | 'mental_health' | 'feeding' | 'data_consent' | 'complete';
+  step: 'welcome' | 'delivery_details' | 'feeding' | 'mental_health' | 'check_in_time' | 'data_consent' | 'complete';
   profile?: Partial<RecoveryProfile>;
+}
+
+export interface EpdsResponse {
+  ableToLaugh: number;
+  lookedForward: number;
+  blamedSelf: number;
+  anxious: number;
+  scared: number;
+  overwhelmed: number;
+  difficultySleeping: number;
+  sad: number;
+  crying: number;
+  selfHarm: number;
 }

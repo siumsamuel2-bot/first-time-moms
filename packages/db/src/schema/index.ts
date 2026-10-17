@@ -58,6 +58,8 @@ export const providers = pgTable('providers', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   specialty: text('specialty').notNull(),
+  location: text('location'),
+  phone: text('phone'),
   acceptingNewPatients: text('accepting_new_patients').notNull().default('true'),
   contractStatus: text('contract_status').notNull().default('active'),
   createdAt: timestamp('created_at').notNull().defaultNow(),

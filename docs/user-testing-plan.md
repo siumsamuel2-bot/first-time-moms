@@ -1,64 +1,30 @@
 # User Testing Plan — Firstweeks Pilot
 
-**To:** CEO, CTO
+**To:** CEO, CTO, CMO
 **From:** UX Designer
-**Date:** June 5, 2026
+**Date:** July 23, 2026 (Updated from v1 June 5, 2026)
 
 ---
 
 ## Overview
 
-This document outlines the user testing strategy for the Firstweeks pilot. We will validate UX decisions with real first-time mothers and OB-GYN providers before full launch.
+This document outlines the user testing strategy for the Firstweeks pilot. We validate UX decisions with real first-time mothers and OB-GYN providers. Phase 1 concept validation (8 mothers) was completed in June 2026. Phase 2 usability testing and Phase 3 pilot are current focus.
 
 ## Testing Phases
 
-### Phase 1: Concept Validation (Pre-Build)
-**Timeline:** Week 1-2
-**Participants:** 8 first-time mothers (within 6 months postpartum)
+### Phase 1: Concept Validation (Complete — June 2026)
+**Timeline:** Completed June 2026
+**Participants:** 8 first-time mothers (0-6 months postpartum)
 **Method:** Remote moderated sessions using wireframe prototypes
 
-**Goals:**
-- Validate onboarding flow feels manageable for exhausted mothers
-- Test escalation language does not cause alarm
-- Confirm daily check-in questions feel relevant, not generic
-- Validate provider matching value proposition
-
-**Recruitment Criteria:**
-| Criteria | Target |
-|----------|--------|
-| First-time mothers | 100% |
-| 0-6 months postpartum | 50% at 0-8 weeks, 50% at 8-24 weeks |
-| Age range | 25-40 |
-| Geographic diversity | 4 states minimum |
-| Feeding method | 50% breastfeeding, 25% formula, 25% both |
-| Delivery type | 50% vaginal, 50% C-section |
-| Mental health history | 25% with prior anxiety/depression |
-
-**Session Structure (60 min):**
-1. **Warm-up (5 min):** Build rapport, explain no judgment, get consent
-2. **Onboarding walkthrough (20 min):** Participant narrates thoughts while reviewing wireframes
-3. **Daily check-in scenario (15 min):** "It's day 5, you get a notification..."
-4. **Escalation scenario (15 min):** Present tough week scenario, show warm check-in flow
-5. **Debrief (5 min):** Overall impressions, likelihood to recommend
-
-**Key Questions:**
-- "At what point did you feel overwhelmed or confused?"
-- "How would you feel if you saw this message at 3 AM while holding your baby?"
-- "Does this language feel supportive or alarming?"
-- "What would make you more likely to complete the daily check-in?"
-- "Would you accept a provider referral through the app? Why or why not?"
-
-**Deliverables:**
-- Video recordings (with consent)
-- Affinity diagram of pain points
-- Prioritized UX changes before Phase 2
+**Outcome:** All escalation UX patterns validated for anxiety sensitivity. Research materials transferred to `research/` directory. Findings incorporated into wireframe iterations.
 
 ---
 
 ### Phase 2: Usability Testing (Alpha Build)
-**Timeline:** Week 5-6 (after Phase 1 engineering implementation)
+**Timeline:** TBD — blocked on CTO P0/P1 implementation
 **Participants:** 12 first-time mothers + 4 OB-GYN providers
-**Method:** Remote unmoderated (Maze/UserTesting.com) + 4 moderated clinician sessions
+**Method:** Remote moderated sessions using alpha build
 
 **Goals:**
 - Validate task completion rates for core flows
@@ -95,13 +61,13 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 - Quantitative dashboard (success rates, time-on-task)
 - Heatmaps of click patterns
 - Issue severity matrix (critical/major/minor)
-- Recommended fixes before beta
+- Recommended fixes before pilot
 
 ---
 
-### Phase 3: Pilot Study (Beta with Real Users)
-**Timeline:** Week 9-12 (4-week pilot)
-**Participants:** 50 first-time mothers + 6 OB-GYN practices
+### Phase 3: Pilot Study (30 Mothers, 2 Practices)
+**Timeline:** Target Aug-Sep 2026 (6-week pilot)
+**Participants:** 30 first-time mothers (0-6 weeks pp) + 2 OB-GYN practices
 **Method:** Longitudinal field study with in-app analytics + weekly surveys
 
 **Goals:**
@@ -109,11 +75,12 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 - Measure escalation trigger accuracy
 - Assess clinical workflow integration
 - Identify edge cases not caught in lab testing
+- Collect real-world postpartum symptom data
 
 **Recruitment:**
-- Partner with 6 OB-GYN practices from target list
-- Each practice recruits 8-10 patients
-- Incentive: $50 gift card per week for mothers, free platform access for providers
+- Partner with 2 pilot OB-GYN practices (CMO-led)
+- Each practice recruits ~15 patients
+- Incentive structure TBD (see CMO budget approval)
 
 **Data Collection:**
 | Source | Frequency | Metrics |
@@ -126,14 +93,13 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 **Success Criteria for Pilot:**
 | Metric | Target | Stretch |
 |--------|--------|---------|
-| Day 1 onboarding completion | >90% | >95% |
-| Daily check-in completion (avg) | >70% | >80% |
-| Escalation acceptance rate | >50% | >65% |
-| Provider referral completion | >40% | >60% |
-| Week 4 retention | >75% | >85% |
-| SUS score (post-pilot) | >75 | >85 |
-| NPS (mothers) | >40 | >60 |
+| Day 1 onboarding completion | >85% | >95% |
+| Daily check-in adherence (day 7) | >70% | >80% |
+| Escalation acceptance rate (when flagged) | >40% | >65% |
+| Provider referral completion | >30% | >50% |
+| NPS (mothers, exit survey) | >40 | >60 |
 | Clinician satisfaction | >4/5 | >4.5/5 |
+| Early complication caught | ≥1 | ≥3 |
 
 **Edge Cases to Monitor:**
 - Users who skip onboarding questions
@@ -141,6 +107,7 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 - Users who decline all escalation offers
 - Clinicians who ignore dashboard alerts
 - Technical failures (push notification delivery, API timeouts)
+- Baby-related vs. mother-related symptom confusion
 
 **Deliverables:**
 - Pilot outcomes report with all metrics
@@ -152,16 +119,15 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 
 ## Recruitment Strategy
 
-### For Mothers
-1. **Partner with OB-GYN practices:** Ask pilot clinics to share study flyer with recent patients
-2. **Social media:** Instagram/Facebook ads targeting "new mothers" + "postpartum" interests
+### For Mothers (Phase 2 & 3)
+1. **Partner with OB-GYN practices:** Pilot clinics share study flyer with eligible patients (CMO-led)
+2. **Social media:** Instagram/Facebook ads targeting "new mothers" + "postpartum" interests (CMO-led)
 3. **What to Expect community:** Post in forums (with moderator approval)
-4. **Doula/midwife networks:** Reach out to birth worker organizations
+4. **Referral:** Snowball sampling from enrolled participants (up to 2 per participant)
 
-**Incentive Structure:**
-- Phase 1 (concept): $75 Amazon gift card
-- Phase 2 (usability): $100 Amazon gift card
-- Phase 3 (pilot): $50/week × 4 weeks = $200
+**Incentive Structure (Pending CEO Budget Approval):**
+- Phase 2 (usability): $100 gift card per session
+- Phase 3 (pilot): $25-50/week per participant
 
 **Screening Survey:**
 ```
@@ -174,30 +140,36 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 7. Would you be comfortable sharing your screen on a video call? (yes/no)
 ```
 
-### For Clinicians
-1. **Target list outreach:** Use `outreach/obgyn-pilot/target-list.md`
-2. **Professional networks:** ACOG (American College of OB-GYN) chapters
-3. **Medical school affiliations:** Leverage academic connections from target practices
-4. **LinkedIn:** Direct outreach to practice managers
+### For Clinicians (Dashboard Validation)
+1. **Target list outreach:** Pilot practices (CMO-led)
+2. **Incentive:** Free platform access during pilot + co-authorship on outcomes paper
 
-**Incentive:**
-- Free platform access for duration of pilot + 6 months post-pilot
-- CME credits for participation (if applicable)
-- Co-authorship on pilot outcomes paper (if publishing)
+---
+
+## Anxiety-Sensitive Escalation Design Validation
+
+Escalation UX is Firstweeks' highest clinical risk. Dedicated sub-protocol documented separately:
+
+- **Protocol:** `research/anxiety-sensitivity-validation-protocol.md`
+- **Participants:** 5-8 first-time mothers (added to Phase 2 cohort)
+- **Safeguards:** STAI-6 pre/post measurement, crisis protocol, optional crisis scenario
+- **Success threshold:** <15% panic response at any escalation layer
+
+Go/no-go escalation criteria documented in the protocol — escalation flow is **red** if >20% panic response occurs during testing.
 
 ---
 
 ## Accessibility Testing
 
 ### WCAG 2.1 AA Compliance Checklist
-- [ ] All text meets 4.5:1 contrast ratio
-- [ ] Touch targets ≥44x44px
-- [ ] Screen reader compatibility (VoiceOver, TalkBack)
-- [ ] Keyboard navigation support (for web)
-- [ ] Focus indicators visible
-- [ ] Color is not sole means of conveying information
-- [ ] Error messages are descriptive and actionable
-- [ ] Form labels are persistent (not placeholder-only)
+- [ ] All text meets 4.5:1 contrast ratio (P0 — CTO)
+- [ ] Touch targets ≥44x44px (P0 — CTO)
+- [ ] Screen reader compatibility (VoiceOver, TalkBack) (P1)
+- [ ] Keyboard navigation support (for web) (P1)
+- [ ] Focus indicators visible (P1)
+- [ ] Color is not sole means of conveying information (P0 — CTO)
+- [ ] Error messages are descriptive and actionable (P1)
+- [ ] Form labels are persistent (not placeholder-only) (P1)
 
 **Testing Tools:**
 - axe DevTools (browser extension)
@@ -214,7 +186,7 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 ## Ethical Considerations
 
 ### Informed Consent
-- Written consent form for all participants
+- Written consent form for all participants — template at `docs/consent-form-template.md`
 - Clear explanation of data usage (HIPAA compliance)
 - Right to withdraw at any time without penalty
 - Separate consent for video recording
@@ -222,8 +194,8 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 ### Mental Health Safeguards
 - All participants receive crisis resources upfront (988 Lifeline, Postpartum Support International)
 - If participant indicates suicidal ideation during testing: pause session, provide resources, offer to connect with clinician
-- Research team trained in mental health first aid
-- IRB approval if publishing research
+- Moderator trained in Mental Health First Aid
+- IRB exempt determination pending (CMO — FIR-69)
 
 ### Privacy
 - All data de-identified for analysis
@@ -235,33 +207,31 @@ This document outlines the user testing strategy for the Firstweeks pilot. We wi
 
 ## Timeline
 
-| Week | Activity | Owner |
-|------|----------|-------|
-| 1 | Recruit Phase 1 participants | UX + CMO |
-| 2 | Run Phase 1 sessions (8 mothers) | UX |
-| 3 | Analyze Phase 1, update wireframes | UX |
-| 4-7 | Engineering Phase 1 implementation | CTO |
-| 8 | Recruit Phase 2 participants | UX + CMO |
-| 9 | Run Phase 2 usability testing | UX |
-| 10 | Analyze Phase 2, file bugs | UX + CTO |
-| 11-14 | Pilot study (50 mothers, 6 clinics) | All hands |
-| 15 | Pilot analysis, go/no-go decision | CEO + team |
+| Milestone | Target | Dependencies | Owner |
+|-----------|--------|-------------|-------|
+| CTO P0/P1 implementation complete | TBD | Engineering sprints | CTO |
+| Phase 2 usability sessions | +2 weeks from CTO complete | CTO build, CMO recruitment | UX + CMO |
+| Phase 2 analysis | +1 week from sessions | Session recordings | UX |
+| Pilot launch (Phase 3) | +1 week from Phase 2 | Phase 2 pass, practice readiness | All |
+| Pilot duration (6 weeks) | 6 weeks from launch | Patient enrollment | All |
+| Pilot analysis + go/no-go | +2 weeks from pilot end | Full dataset | UX + CEO |
+
+**Note:** Pilot currently blocked on CTO P0/P1 fixes (6 items: red colors, warning icons, missing dismiss options, dead navigation) and CMO OB-GYN practice partnerships.
 
 ---
 
 ## Budget
 
-| Item | Cost |
-|------|------|
-| Phase 1 incentives (8 × $75) | $600 |
-| Phase 2 incentives (12 × $100 + 4 × $100) | $1,600 |
-| Phase 3 incentives (50 × $200) | $10,000 |
-| UserTesting.com subscription (3 months) | $900 |
-| Recruitment ads (Instagram/Facebook) | $500 |
-| Transcription service (rev.com) | $400 |
-| **Total** | **$14,000** |
+| Item | Cost | Status |
+|------|------|--------|
+| Phase 2 incentives (12 × $100 + 4 × $100) | $1,600 | Pending CEO approval |
+| Phase 3 incentives (30 participants) | TBD | Pending CEO + CMO |
+| Recruitment ads (Instagram/Facebook) | $500 | Pending CMO |
+| Transcription service (rev.com) | $400 | Available |
+| UserTesting.com subscription (3 months) | $900 | Not yet purchased |
+| **Total estimated** | **~$14,000** | **Pending approvals** |
 
-**Note:** Does not include staff time. Assumes UX Designer leads testing with support from CMO on recruitment.
+**Note:** Pilot incentive budget ($350) documented in FIR-174 requires CEO approval. Does not include staff time.
 
 ---
 

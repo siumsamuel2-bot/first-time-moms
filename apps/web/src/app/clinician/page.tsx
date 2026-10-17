@@ -85,10 +85,25 @@ const severityStyles: Record<FlaggedPatient['severity'], string> = {
   critical: styles.critical!,
 };
 
+const severityIcons: Record<FlaggedPatient['severity'], string> = {
+  low: '●',
+  medium: '◆',
+  high: '▲',
+  critical: '⚠',
+};
+
+const severityLabels: Record<FlaggedPatient['severity'], string> = {
+  low: 'Low',
+  medium: 'Medium',
+  high: 'High',
+  critical: 'Critical',
+};
+
 function RiskBadge({ severity }: { severity: FlaggedPatient['severity'] }) {
   return (
-    <span className={`${styles.severity} ${severityStyles[severity]}`}>
-      {severity === 'critical' ? 'Critical' : severity === 'high' ? 'High' : severity === 'medium' ? 'Med' : 'Low'}
+    <span className={`${styles.severity} ${severityStyles[severity]}`} role="status">
+      <span aria-hidden="true" style={{ marginRight: 'var(--spacing-1)' }}>{severityIcons[severity]}</span>
+      {severityLabels[severity]}
     </span>
   );
 }
@@ -354,10 +369,57 @@ export default function ClinicianPage() {
               <h3>Send Warm Referral</h3>
               <button className={styles.modalClose} onClick={() => setReferralModal({ open: false })}>×</button>
             </div>
-            <p className={styles.modalBody}>Referral workflow for {selected.name} will be implemented in follow-up.</p>
+            <div className={styles.modalBody}>
+              <p style={{ marginBottom: 'var(--spacing-3)', fontSize: 'var(--text-sm)', color: 'var(--color-neutral-600)' }}>
+                Send a warm referral for <strong>{selected.name}</strong> (Day {selected.daysSinceDelivery} postpartum, {selected.deliveryType}).
+              </p>
+              <div style={{ marginBottom: 'var(--spacing-3)' }}>
+                <label style={{ fontSize: 'var(--text-sm)', fontWeight: 500, display: 'block', marginBottom: 'var(--spacing-1)', color: 'var(--color-neutral-700)' }}>
+                  Select provider
+                </label>
+                <select
+                  style={{
+                    width: '100%',
+                    padding: 'var(--spacing-2) var(--spacing-3)',
+                    border: '1px solid var(--color-neutral-300)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--text-sm)',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <option>Dr. Sarah Mitchell — Maternal-Fetal Medicine (3.2 mi)</option>
+                  <option>Dr. Emily Carson — Perinatal Psychiatry (5.1 mi)</option>
+                  <option>Riverside Wellness Center — Postpartum Support Group (2.8 mi)</option>
+                </select>
+              </div>
+              <div style={{ marginBottom: 'var(--spacing-3)' }}>
+                <label style={{ fontSize: 'var(--text-sm)', fontWeight: 500, display: 'block', marginBottom: 'var(--spacing-1)', color: 'var(--color-neutral-700)' }}>
+                  Referral note (optional)
+                </label>
+                <textarea
+                  placeholder="Brief clinical context for the provider..."
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    padding: 'var(--spacing-2) var(--spacing-3)',
+                    border: '1px solid var(--color-neutral-300)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--text-sm)',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                  }}
+                />
+              </div>
+              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-neutral-400)' }}>
+                The patient will be notified and the provider will reach out within 24 hours.
+              </p>
+            </div>
             <div className={styles.modalActions}>
-              <Button variant="secondary" size="sm" onClick={() => setReferralModal({ open: false })}>Close</Button>
-              <Button variant="primary" size="sm" onClick={() => setReferralModal({ open: false })}>Confirm Referral</Button>
+              <Button variant="secondary" size="sm" onClick={() => setReferralModal({ open: false })}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={() => {
+                setReferralModal({ open: false });
+                handleMarkReviewed(selected.id);
+              }}>Send Referral</Button>
             </div>
           </div>
         </div>

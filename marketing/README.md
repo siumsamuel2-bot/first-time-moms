@@ -10,13 +10,36 @@ marketing/
 ├── personalized-advice-quiz.md       # Lead magnet quiz design (FIR-11)
 ├── referral-loop-design.md           # Growth & referral engine (FIR-11)
 ├── institutional-sales-pipeline.md   # Institutional data licensing strategy (FIR-58)
+├── go-to-market-strategy.md          # 4-phase launch strategy (NEW)
+├── phase-1-execution-sprint.md       # Weekly execution sprint plan (NEW)
+├── quiz-email-nurture-sequence.md    # 9-email drip from quiz → paid (NEW)
+├── conversion-optimization-framework.md # Funnel optimization & A/B tests (FIR-25)
+├── pilot-onboarding-kit.md           # Practice onboarding playbook (NEW)
+├── provider-onboarding-flow.md       # Provider referral activation (NEW)
+├── kpi-dashboard-template.md         # Marketing metrics framework (NEW)
+├── community-manager-job-description.md # CM hiring spec (NEW)
+├── community-manager-screening-rubric.md # CM screening rubric (NEW)
+├── PROVIDER-NETWORK.md               # Provider partnership guide (NEW)
 ├── institutional/                    # Operational materials for institutional pipeline
 │   ├── data-dictionary.md            # Data product technical spec & schema
 │   ├── irb-strategy-memo.md          # IRB exempt determination pathway
+│   ├── irb-submission-execution-plan.md # WCG IRB step-by-step guide (NEW)
 │   ├── pipeline-tracker.md           # Institutional lead tracking (20+ targets)
 │   ├── pilot-conversion-playbook.md  # Convert pilot practices to paid data customers
 │   ├── outreach-templates.md         # Email/LinkedIn templates by buyer tier
 │   └── conference-plan.md            # Conference calendar & abstract strategy
+├── community-pivot/                  # Consumer referral + ambassador program
+│   ├── consumer-referral-playbook.md
+│   ├── content-calendar-4-week.md
+│   ├── community-manager-sop.md
+│   ├── phase1-content-drafts.md
+│   └── ambassador-program-guide.md
+├── pilot-recruitment/                # OB-GYN pilot outreach materials
+│   ├── email-sequences.md
+│   ├── landing-page-copy.md
+│   ├── social-media-templates.md
+│   ├── referral-incentive-design.md
+│   └── community-outreach-templates.md
 ├── README.md                         # This file
 └── blog/
     ├── the-first-6-weeks-what-every-new-mom-should-know.md
@@ -66,6 +89,9 @@ See `outreach/obgyn-pilot/` directory.
 - [Outreach Templates](institutional/outreach-templates.md) — Email/LinkedIn templates for each buyer tier
 - [Conference Plan](institutional/conference-plan.md) — Conference calendar, abstract draft, event budget
 
+### FIR-25: Conversion Optimization Framework
+- [Conversion Optimization Framework](conversion-optimization-framework.md) — Full funnel optimization: onboarding, trial conversion, A/B tests, retention, referral
+
 ## Status Summary
 
 | Task | Status | Key Deliverable |
@@ -73,7 +99,19 @@ See `outreach/obgyn-pilot/` directory.
 | FIR-10 | Materials complete | Content calendar + 12 blog posts (full 90 days) |
 | FIR-11 | Materials complete | Quiz design + referral loop |
 | FIR-12 | Materials complete, execution subtask created | Target list + outreach materials + pipeline tracker |
+| FIR-25 | Materials complete | Conversion optimization framework (7 sections, 15+ A/B tests) |
 | FIR-58 | Materials complete | 6 operational docs + updated pipeline strategy |
+| — | ✅ Complete | Go-to-market strategy |
+| — | ✅ Complete | Phase 1 execution sprint plan |
+| — | ✅ Complete | Quiz email nurture sequence (9 emails) |
+| — | ✅ Complete | Pilot onboarding kit |
+| — | ✅ Complete | Provider onboarding flow |
+| — | ✅ Complete | KPI dashboard template |
+| — | ✅ Complete | Community manager job description |
+| — | ✅ Complete | Community manager screening rubric |
+| — | ✅ Complete | IRB submission execution plan |
+| — | ✅ Complete | Ambassador program guide |
+| — | ✅ Complete | Community pivot content (Phases 1-3, 4-week calendar, SOP) |
 
 
 

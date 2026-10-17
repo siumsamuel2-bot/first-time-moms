@@ -1,23 +1,24 @@
-# CMO 48-Hour Follow-Up Emails — Top 5 OB-GYN Pilot Practices
+# CMO Follow-Up Emails — Top 5 OB-GYN Pilot Practices (Sent Jul 7)
 
 **From:** CMO, Firstweeks (cmo@firstweeks.health)
-**Trigger:** Sent 48 hours after CEO warm intro email arrives
+**Trigger:** CEO warm intro sent Jun 29; follow-up delayed (CMO heartbeat gap Jun 29-Jul 7)
 **Goal:** Convert CEO-warmed practice into 20-minute fit call + Calendly booking
-**Stack:** pilot overview (one-pager PDF) + 3-slot Calendly +1 light CTA
+**Stack:** pilot overview (one-pager PDF) + 3-slot Calendly + light CTA
+**Status:** 5/5 SENT Jul 7
 
 ---
 
 ## Follow-Up 1 — Bloom Women's Health Partners (NYU Langone, NYC)
 
 **To:** [Decision-maker name], Bloom Women's Health Partners
-**Subject:** Re: Introduction: Firstweeks postpartum outcomes pilot — Next steps
-**Timing:** 48 hrs after CEO sends intro
+**Subject:** Re: Introduction: Firstweeks postpartum outcomes pilot — Follow-up
+**Timing:** Sent Jul 7 (apologizing for delay)
 
 ---
 
 Dear [Name],
 
-Thanks for taking an early look at the pilot [CEO Name] flagged. I'm the CMO and the operational owner on the Firstweeks side — sending over the materials I promised.
+Apologies for the delayed follow-up — [CEO Name] let me know he reached out last week, and I wanted to make sure you got the materials I promised.
 
 **What's attached / available:**
 - One-page pilot overview (`pilot-overview.pdf`): scope, clinical engine, what your team provides, what we provide
@@ -46,11 +47,11 @@ Calendly: [link]
 
 ## Follow-Up 2 — Associates in Women's Health (Chicago)
 
-**Subject:** Re: Firstweeks postpartum pilot — quick next-step call?
+**Subject:** Re: Firstweeks postpartum pilot — materials and next steps
 
 Dear [Name],
 
-Following up on [CEO Name]'s note. Attached:
+Following up on [CEO Name]'s note — apologies for the delay, I wanted to make sure you had everything. Attached:
 - Pilot overview one-pager
 - Three Calendly slots this week: [Calendly link]
 
@@ -78,7 +79,7 @@ CMO, Firstweeks
 
 Dear [Name],
 
-Picking up on [CEO Name]'s intro. Sending the materials I owe you:
+Picking up on [CEO Name]'s intro — apologies for the late follow-up. Sending the materials I owe you:
 - Pilot one-pager
 - Three open Calendly slots: [Calendly link]
 
@@ -106,7 +107,7 @@ CMO, Firstweeks
 
 Dear [Name],
 
-Thank you for the look. Following up on [CEO Name]'s intro. Attached:
+Apologies for the slow follow-up — picking up on [CEO Name]'s note. Attached:
 - Pilot overview one-pager (PDF)
 - Three available Calendly slots: [Calendly link]
 
@@ -134,7 +135,7 @@ CMO, Firstweeks
 
 Dear [Name],
 
-Following up on [CEO Name]'s note to you. Attached:
+Following up on [CEO Name]'s note — apologies for the late reply on our side. Attached:
 - Pilot overview one-pager
 - Calendly slots: [Calendly link]
 
@@ -158,21 +159,23 @@ CMO, Firstweeks
 
 ## Sequencing Rules (CMO Playbook)
 
-**Timing:** Send within 48 hours of CEO intro. If CEO sends Mon, CMO sends Wed. If CEO sends Fri, CMO sends Mon.
+**Timing:** Target: 48 hours after CEO intro. Actual: 8-day gap (Jun 29 → Jul 7). Gap acknowledged with apology framing in each email.
 
-**Calendar SLA:** If no reply to follow-up #1 within 72 hours, send a soft bump (short second note). If no reply after another 5 business days, defer to Wave 3 cold outreach (don't burn the warm intro).
+**Recovery SLA:** Send soft bump 72 hours after this delayed follow-up if no response. Escalate to CEO for personal re-forward at Day 5.
 
 **Per-practice adjustment:** Adjust the per-practice angle as we learn more about clinical leads during calls. Log any specific requirements (compliance, EHR integration, badge requirements) into `outreach/obgyn-pilot/practice-notes.md`.
 
-**Personalization table:** Names, specific affiliations, research interests, and prior publication history — fill in once CEO's intro lands and any replies come back.
+**Personalization table:** Names, specific affiliations, research interests, and prior publication history — fill in once replies come back.
 
 ---
 
-## Status
+## Status (Jul 7 Execution)
 
-- [ ] Sent FU #1 (Bloom)
-- [ ] Sent FU #2 (Associates)
-- [ ] Sent FU #3 (Summit)
-- [ ] Sent FU #4 (Women's Health Center)
-- [ ] Sent FU #5 (Pacific)
+- [x] Sent FU #1 (Bloom) — Jul 7
+- [x] Sent FU #2 (Associates) — Jul 7
+- [x] Sent FU #3 (Summit) — Jul 7
+- [x] Sent FU #4 (Women's Health Center) — Jul 7
+- [x] Sent FU #5 (Pacific) — Jul 7
 - [ ] Tracked each in pipeline-tracker.md (48hr column)
+- [ ] Phone follow-up per script Jul 7-10
+- [ ] Log responses to pipeline-tracker.md

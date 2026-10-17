@@ -1,6 +1,4 @@
 .footer {
-  border-top: 1px solid #e7e5e4;
-  background: #fafaf9;
   padding: 24px 0;
   margin-top: 40px;
 }
@@ -18,13 +16,11 @@
 .title {
   font-size: 14px;
   font-weight: 600;
-  color: #78716c;
   margin-bottom: 8px;
 }
 
 .description {
   font-size: 13px;
-  color: #a8a29e;
   margin-bottom: 12px;
   line-height: 1.5;
 }
@@ -36,35 +32,18 @@
   gap: 8px;
 }
 
-.emergencyLink {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: #dc2626;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-
-.emergencyLink:hover {
-  background: #b91c1c;
-}
-
 .warmLink {
   display: inline-block;
   padding: 6px 12px;
   border-radius: 6px;
   background: #fff;
-  border: 1px solid #e7e5e4;
-  color: #78716c;
+  border: 1px solid #FFE4E6;
   font-size: 13px;
   text-decoration: none;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .warmLink:hover {
-  background: #fafaf9;
-  border-color: #d6d3d1;
+  background: #FFF1F2;
+  border-color: #FECDD3;
 }

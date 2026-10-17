@@ -13,6 +13,7 @@ export default function Layout() {
         <Stack.Screen name="onboarding" options={{ title: 'Onboarding' }} />
         <Stack.Screen name="check-in" options={{ title: 'Daily Check-in' }} />
         <Stack.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+        <Stack.Screen name="escalation" options={{ title: 'Escalation Prototype' }} />
       </Stack>
     </Providers>
   );

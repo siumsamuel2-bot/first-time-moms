@@ -53,6 +53,44 @@ const config: Config = {
           700: "#44403C",
           900: "#1C1917",
         },
+        "esc-slate": {
+          50: "#F1F5F9",
+          100: "#E2E8F0",
+          200: "#CBD5E1",
+          600: "#475569",
+          800: "#1E293B",
+        },
+        "esc-sage": {
+          50: "#F0FDF4",
+          100: "#DCFCE7",
+          500: "#22C55E",
+        },
+        "esc-terracotta": {
+          50: "#FEF2F0",
+          100: "#FEE2DE",
+          500: "#E07A5F",
+        },
+        "esc-amber": {
+          50: "#FFFBEB",
+          100: "#FEF3C7",
+          500: "#F59E0B",
+        },
+        "esc-indigo": {
+          50: "#EEF2FF",
+          100: "#E0E7FF",
+          500: "#6366F1",
+        },
+        "esc-berry": {
+          50: "#FDF2F8",
+          100: "#FCE7F3",
+          500: "#EC4899",
+        },
+        "esc-crisis": {
+          50: "#FFF1F2",
+          100: "#FFE4E6",
+          600: "#E11D48",
+          icon: "#BE123C",
+        },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
@@ -69,6 +107,30 @@ const config: Config = {
       },
       spacing: {
         "18": "4.5rem",
+      },
+      keyframes: {
+        "slide-down": {
+          "0%": { opacity: "0", transform: "translateY(-8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.98)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+      },
+      animation: {
+        "slide-down": "slide-down 300ms ease-out",
+        "scale-in": "scale-in 400ms ease-out",
+        "fade-in": "fade-in 200ms ease-out",
+        shimmer: "shimmer 1.5s infinite linear",
       },
     },
   },

@@ -1,22 +1,18 @@
 import { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useOnboardingState } from '@/hooks/useOnboardingState';
 
 export default function IndexScreen() {
   const router = useRouter();
-  const { isComplete, loading } = useOnboardingState();
 
   useEffect(() => {
-    if (!loading) {
-      router.replace(isComplete ? '/dashboard' : '/onboarding');
-    }
-  }, [isComplete, loading, router]);
+    router.replace('/escalation');
+  }, [router]);
 
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#007AFF" />
-      <Text style={styles.loadingText}>Loading...</Text>
+      <Text style={styles.loadingText}>Loading escalation prototype...</Text>
     </View>
   );
 }
