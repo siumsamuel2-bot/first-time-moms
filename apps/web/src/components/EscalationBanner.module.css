@@ -1,8 +1,0 @@
-.banner {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-lg);
-  border: 1px solid;
-}
