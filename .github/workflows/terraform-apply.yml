@@ -1,0 +1,220 @@
+name: Terraform Apply (OCI Staging)
+
+# Manual, one-click provisioning of the Oracle Cloud staging environment.
+#
+# Human prerequisites (configure once):
+#   1. GitHub Actions secrets in the `staging` environment. At minimum:
+#        OCI_TENANCY_OCID, OCI_USER_OCID, OCI_FINGERPRINT, OCI_PRIVATE_KEY,
+#        OCI_COMPARTMENT_OCID, OCI_NAMESPACE
+#   2. App/infra secrets for the running stack:
+#        SSH_PUBLIC_KEY, JWT_SECRET, PUSH_VAPID_PUBLIC_KEY,
+#        PUSH_VAPID_PRIVATE_KEY, ANALYTICS_SALT, OCI_CERTIFICATE_NAME
+#   3. DNS: an A/AAAA record for api.staging.firstweeks.app pointing at the
+#      load balancer public IP (printed by this workflow's outputs).
+#
+# Nothing in this workflow is committed as a secret; values are injected from
+# the `staging` environment at run time. See docs/deployment-runbook.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Terraform action"
+        required: true
+        default: plan
+        type: choice
+        options:
+          - plan
+          - apply
+      confirm_apply:
+        description: "Type APPLY to confirm a real apply (ignored for plan)"
+        required: false
+        default: ""
+        type: string
+      region:
+        description: "OCI region"
+        required: true
+        default: us-phoenix-1
+        type: string
+      domain:
+        description: "Public API domain"
+        required: true
+        default: api.staging.firstweeks.app
+        type: string
+
+permissions:
+  contents: read
+
+# One apply at a time; never cancel an in-flight apply (it can leave state locked).
+concurrency:
+  group: terraform-oci-staging
+  cancel-in-progress: false
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  TF_VERSION: "1.9.8"
+  IMAGE_API: ghcr.io/${{ github.repository }}/api:latest
+  IMAGE_WEB: ghcr.io/${{ github.repository }}/web:latest
+
+jobs:
+  preflight:
+    name: Preflight (credentials)
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Fail fast on missing credentials
+        env:
+          OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_USER_OCID: ${{ secrets.OCI_USER_OCID }}
+          OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_PRIVATE_KEY: ${{ secrets.OCI_PRIVATE_KEY }}
+          OCI_COMPARTMENT_OCID: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PUSH_VAPID_PUBLIC_KEY: ${{ secrets.PUSH_VAPID_PUBLIC_KEY }}
+          PUSH_VAPID_PRIVATE_KEY: ${{ secrets.PUSH_VAPID_PRIVATE_KEY }}
+          ANALYTICS_SALT: ${{ secrets.ANALYTICS_SALT }}
+          OCI_CERTIFICATE_NAME: ${{ secrets.OCI_CERTIFICATE_NAME }}
+        run: |
+          missing=()
+          for name in OCI_TENANCY_OCID OCI_USER_OCID OCI_FINGERPRINT OCI_PRIVATE_KEY \
+                      OCI_COMPARTMENT_OCID OCI_NAMESPACE SSH_PUBLIC_KEY JWT_SECRET \
+                      PUSH_VAPID_PUBLIC_KEY PUSH_VAPID_PRIVATE_KEY ANALYTICS_SALT \
+                      OCI_CERTIFICATE_NAME; do
+            if [ -z "${!name}" ]; then
+              missing+=("$name")
+            fi
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required secrets in the 'staging' environment: ${missing[*]}"
+            echo "### Blocked: missing credentials" >> "$GITHUB_STEP_SUMMARY"
+            printf -- '- `%s`\n' "${missing[@]}" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "All required credentials are present."
+
+      - name: Require explicit apply confirmation
+        if: ${{ github.event.inputs.action == 'apply' }}
+        env:
+          CONFIRM: ${{ github.event.inputs.confirm_apply }}
+        run: |
+          if [ "$CONFIRM" != "APPLY" ]; then
+            echo "::error::Refusing to apply: set 'confirm_apply' to APPLY."
+            exit 1
+          fi
+
+  terraform:
+    name: Terraform ${{ github.event.inputs.action }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    environment: staging
+    defaults:
+      run:
+        working-directory: infra/terraform/environments/oci-staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Install OCI CLI
+        uses: oracle-actions/setup-oci-cli@v1
+        with:
+          version: "3.44.0"
+
+      - name: Configure OCI credentials
+        env:
+          OCI_CONFIG_REGION: ${{ github.event.inputs.region }}
+          OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_USER_OCID: ${{ secrets.OCI_USER_OCID }}
+          OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_PRIVATE_KEY: ${{ secrets.OCI_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.oci
+          printf '%s\n' "$OCI_PRIVATE_KEY" > ~/.oci/private_key.pem
+          chmod 600 ~/.oci/private_key.pem
+          cat > ~/.oci/config <<EOF
+          [DEFAULT]
+          user = ${OCI_USER_OCID}
+          fingerprint = ${OCI_FINGERPRINT}
+          tenancy = ${OCI_TENANCY_OCID}
+          region = ${OCI_CONFIG_REGION}
+          key_file = ~/.oci/private_key.pem
+          EOF
+          oci iam region list --output table >/dev/null
+
+      - name: Write terraform.tfvars
+        env:
+          OCI_REGION: ${{ github.event.inputs.region }}
+          OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+          OCI_COMPARTMENT_OCID: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PUSH_VAPID_PUBLIC_KEY: ${{ secrets.PUSH_VAPID_PUBLIC_KEY }}
+          PUSH_VAPID_PRIVATE_KEY: ${{ secrets.PUSH_VAPID_PRIVATE_KEY }}
+          ANALYTICS_SALT: ${{ secrets.ANALYTICS_SALT }}
+          OCI_CERTIFICATE_NAME: ${{ secrets.OCI_CERTIFICATE_NAME }}
+          DOMAIN: ${{ github.event.inputs.domain }}
+          ALARM_EMAIL: ${{ secrets.ALARM_EMAIL }}
+        run: |
+          {
+            echo "region = \"$OCI_REGION\""
+            echo "tenancy_id = \"$OCI_TENANCY_OCID\""
+            echo "compartment_id = \"$OCI_COMPARTMENT_OCID\""
+            echo "namespace = \"$OCI_NAMESPACE\""
+            echo "ssh_public_key = \"$SSH_PUBLIC_KEY\""
+            echo "jwt_secret = \"$JWT_SECRET\""
+            echo "push_vapid_public_key = \"$PUSH_VAPID_PUBLIC_KEY\""
+            echo "push_vapid_private_key = \"$PUSH_VAPID_PRIVATE_KEY\""
+            echo "analytics_salt = \"$ANALYTICS_SALT\""
+            echo "certificate_name = \"$OCI_CERTIFICATE_NAME\""
+            echo "domain = \"$DOMAIN\""
+            echo "api_image = \"${IMAGE_API}\""
+            echo "web_image = \"${IMAGE_WEB}\""
+            echo "alarm_email = \"$ALARM_EMAIL\""
+          } > terraform.tfvars
+
+      - name: Bootstrap Terraform state bucket (idempotent)
+        env:
+          OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
+          OCI_COMPARTMENT_OCID: ${{ secrets.OCI_COMPARTMENT_OCID }}
+        run: |
+          oci os bucket get --namespace "$OCI_NAMESPACE" --bucket-name staging-firstweeks-terraform-state >/dev/null 2>&1 || \
+            oci os bucket create \
+              --namespace "$OCI_NAMESPACE" \
+              --name staging-firstweeks-terraform-state \
+              --compartment-id "$OCI_COMPARTMENT_OCID"
+
+      - name: Terraform fmt
+        working-directory: infra/terraform
+        run: terraform fmt -check -recursive environments/oci-staging modules/oci-network modules/oci-storage modules/oci-database modules/oci-loadbalancer modules/oci-security modules/oci-compute modules/oci-monitoring
+
+      - name: Terraform init
+        run: terraform init -backend-config=backend.hcl
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -out=tfplan -lock-timeout=5m
+
+      - name: Terraform apply
+        if: ${{ github.event.inputs.action == 'apply' }}
+        run: terraform apply -auto-approve -lock-timeout=5m tfplan
+
+      # Only non-sensitive outputs are printed: step summaries are visible
+      # because this repository is public. The plan file is never uploaded.
+      - name: Terraform outputs (non-sensitive)
+        run: |
+          {
+            echo "### Terraform outputs"
+            echo '```'
+            terraform output -raw load_balancer_ip || true
+            terraform output -raw load_balancer_hostname || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

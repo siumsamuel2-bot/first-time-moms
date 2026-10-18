@@ -1,0 +1,33 @@
+# OCI Staging Environment Variables
+# Copy this file to terraform.tfvars and fill in the values
+
+# OCI Authentication (set via environment variables or OCI CLI config)
+# tenancy_id     = "ocid1.tenancy.oc1..xxxxx"
+# compartment_id = "ocid1.compartment.oc1..xxxxx"
+# region         = "us-phoenix-1"
+# namespace      = "frxxxxx"  # Object Storage namespace
+
+# SSH Access
+# ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2E..."
+
+# Secrets (generate with: openssl rand -base64 32)
+# jwt_secret              = "your-jwt-secret-here"
+# push_vapid_public_key   = "your-vapid-public-key"
+# push_vapid_private_key  = "your-vapid-private-key"
+# analytics_salt          = "your-analytics-salt"
+
+# VAPID
+# push_vapid_subject = "mailto:admin@firstweeks.app"
+
+# TLS Certificate (create in OCI Certificates service)
+# certificate_name = "staging-firstweeks-cert"
+
+# Domain
+# domain = "api.staging.firstweeks.app"
+
+# Docker Images (from GitHub Container Registry)
+# api_image = "ghcr.io/your-org/firstweeks-api:latest"
+# web_image = "ghcr.io/your-org/firstweeks-web:latest"
+
+# Monitoring
+# alarm_email = "alerts@firstweeks.app"

@@ -1,0 +1,80 @@
+#cloud-config
+package_update: true
+packages:
+  - docker.io
+  - docker-compose
+  - jq
+  - curl
+
+write_files:
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    owner: root:root
+    permissions: '0644'
+
+  - path: /opt/firstweeks/docker-compose.yml
+    content: |
+      version: '3.8'
+      services:
+        api:
+          image: ${api_image}
+          environment:
+            NODE_ENV: ${node_env}
+            DATABASE_URL: ${database_url}
+            JWT_SECRET: ${jwt_secret}
+            CORS_ORIGIN: ${cors_origin}
+            PORT: ${port}
+            HOST: "0.0.0.0"
+            PUSH_VAPID_PUBLIC_KEY: ${push_vapid_public_key}
+            PUSH_VAPID_PRIVATE_KEY: ${push_vapid_private_key}
+            PUSH_VAPID_SUBJECT: ${push_vapid_subject}
+            AWS_REGION: us-phoenix-1
+            ANALYTICS_BUCKET: ${environment}-firstweeks-analytics
+            ANALYTICS_SALT: ${analytics_salt}
+          ports:
+            - "${port}:${port}"
+          restart: always
+          healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:${port}/healthz"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+
+  - path: /opt/firstweeks/.env
+    content: |
+      NODE_ENV=${node_env}
+      DATABASE_URL=${database_url}
+      JWT_SECRET=${jwt_secret}
+      CORS_ORIGIN=${cors_origin}
+      PORT=${port}
+      HOST=0.0.0.0
+      PUSH_VAPID_PUBLIC_KEY=${push_vapid_public_key}
+      PUSH_VAPID_PRIVATE_KEY=${push_vapid_private_key}
+      PUSH_VAPID_SUBJECT=${push_vapid_subject}
+      AWS_REGION=us-phoenix-1
+      ANALYTICS_BUCKET=${environment}-firstweeks-analytics
+      ANALYTICS_SALT=${analytics_salt}
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker opc
+  - mkdir -p /opt/firstweeks
+  - cd /opt/firstweeks && docker compose pull
+  - cd /opt/firstweeks && docker compose up -d
+  - echo "Firstweeks API started" > /var/log/firstweeks-startup.log
+
+final_message: "Firstweeks API instance configured and started after $UPTIME seconds"
