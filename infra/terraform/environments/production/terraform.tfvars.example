@@ -1,0 +1,20 @@
+# Production Terraform Variables
+# Copy to production/terraform.tfvars and fill in real values.
+# NEVER commit terraform.tfvars to version control.
+
+region                = "us-east-1"
+github_repo           = "your-org/firstweeks"
+certificate_arn       = "arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+api_image             = "123456789012.dkr.ecr.us-east-1.amazonaws.com/firstweeks/api:latest"
+web_image             = "123456789012.dkr.ecr.us-east-1.amazonaws.com/firstweeks/web:latest"
+jwt_secret            = "your-super-secret-jwt-key-min-32-chars"
+push_vapid_public_key = "your-vapid-public-key"
+push_vapid_private_key = "your-vapid-private-key"
+alarm_email           = "alerts@firstweeks.app"
+analytics_salt        = "your-analytics-salt-change-in-production"
+
+# Optional: Override defaults
+# db_instance_class     = "db.t3.medium"
+# api_desired_count     = 2
+# web_desired_count     = 2
+# backup_retention_days = 35

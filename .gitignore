@@ -1,18 +1,28 @@
-# Dependencies
+# Terraform
+*.tfvars
+!terraform.tfvars.example
+backend.hcl
+!infra/terraform/environments/**/backend.hcl
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+
+# OCI credentials
+*.pem
+*.key
+.oci/
+
+# Node
 node_modules/
-
-# Build
-.next/
 dist/
-.turbo/
-out/
+build/
+*.tsbuildinfo
 
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Package managers
+.pnpm-store/
 
 # IDE
 .vscode/
@@ -24,25 +34,41 @@ out/
 .DS_Store
 Thumbs.db
 
+# Env
+.env
+.env.*
+!.env.example
+
 # Logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 
-# Testing
+# Test coverage
 coverage/
+.nyc_output/
+
+# Docker
+.docker/
+
+# Turbo
+.turbo/
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo
+
+# Biome
+.biome/
+
+# Playwright
+playwright-report/
+test-results/
+
+# Prisma
+prisma/migrations/.migration_lock.toml
 
 # Misc
-*.tsbuildinfo
-next-env.d.ts
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-*.tfplan
-crash.log
-*.tfvars
-!terraform.tfvars.example
-*.auto.tfvars
-!backend.hcl.example
-*.pem
-*.key
+*.local

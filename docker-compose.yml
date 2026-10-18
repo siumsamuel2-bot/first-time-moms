@@ -1,14 +1,59 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: firstweeks
-      POSTGRES_PASSWORD: firstweeks_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: firstweeks
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: development
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/firstweeks
+      JWT_SECRET: dev-secret-change-in-production
+      CORS_ORIGIN: http://localhost:5173
+      PORT: 8080
+      HOST: 0.0.0.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: pnpm dev
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: development
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    command: pnpm dev
 
 volumes:
-  pgdata:
+  postgres_data:

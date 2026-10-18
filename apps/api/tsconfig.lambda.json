@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@firstweeks/shared/*": ["../../packages/shared/dist/*"]
+    }
+  },
+  "include": [
+    "src/lambda/**/*",
+    "src/services/analytics-export.ts",
+    "src/utils/logger.ts",
+    "src/config.ts"
+  ],
+  "exclude": ["node_modules", "dist", "tests", "prisma", "scripts"]
+}

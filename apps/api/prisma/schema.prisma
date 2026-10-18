@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  MOM
+  CLINICIAN
+  ADMIN
+}
+
+enum DeliveryType {
+  VAGINAL
+  C_SECTION
+  VBAC
+}
+
+enum FeedingMethod {
+  BREASTFEEDING
+  FORMULA
+  COMBO
+  PUMPING
+}
+
+enum BleedingLevel {
+  NONE
+  SPOTTING
+  LIGHT
+  MODERATE
+  HEAVY
+}
+
+enum EscalationTrigger {
+  SLEEP_SADNESS_5DAY
+  SLEEP_7DAY
+  SADNESS_7DAY
+  PAIN_SPIKE
+  BLEEDING_HEAVY
+  SUICIDAL_IDEATION
+  MANUAL_CLINICIAN
+}
+
+enum EscalationSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum EscalationStatus {
+  PENDING
+  TRIAGED
+  REFERRED
+  RESOLVED
+  FALSE_POSITIVE
+}
+
+enum ReferralStatus {
+  PENDING
+  MOM_CONSENTED
+  PROVIDER_NOTIFIED
+  APPOINTMENT_SCHEDULED
+  COMPLETED
+  DECLINED
+  EXPIRED
+}
+
+enum ProviderScreeningStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum Specialty {
+  PERINATAL_MH
+  LACTATION
+  PELVIC_FLOOR
+  OBGYN
+  MIDWIFE
+  DOULA
+  PSYCHIATRY
+  THERAPY
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(MOM)
+  emailVerified Boolean   @default(false)
+  emailVerificationToken String?
+  emailVerificationExpires DateTime?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  onboarding    Onboarding?
+  checkIns      CheckIn[]
+  escalations   Escalation[]
+  referrals     Referral[]
+  clinicianNotes ClinicalNote[]
+  pushSubscriptions PushSubscription[]
+  
+  @@index([email])
+  @@index([role])
+  @@index([passwordResetToken])
+  @@index([emailVerificationToken])
+}
+
+model Onboarding {
+  id                    String       @id @default(cuid())
+  userId                String       @unique
+  user                  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveryDate          DateTime
+  deliveryType          DeliveryType
+  feedingMethod         FeedingMethod
+  mentalHealthBaseline  Json
+  complications         String[]
+  completedAt           DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  
+  @@index([userId])
+}
+
+model CheckIn {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date              DateTime  @db.Date
+  sleepHours        Float?
+  sleepDisruption   Int?
+  sadness           Int?
+  anxiety           Int?
+  painLevel         Int?
+  bleeding          BleedingLevel?
+  feedingIssues     Boolean   @default(false)
+  customResponses   Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@index([userId])
+}
+
+model Escalation {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trigger       EscalationTrigger
+  severity      EscalationSeverity
+  status        EscalationStatus  @default(PENDING)
+  assignedTo    String?
+  contextSummary String
+  resolvedAt    DateTime?
+  createdAt     DateTime          @default(now())
+  referral      Referral?
+  
+  @@index([userId, status])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Provider {
+  id                String                 @id @default(cuid())
+  name              String
+  specialties       Specialty[]
+  location          Json
+  insuranceAccepted String[]
+  screeningStatus   ProviderScreeningStatus @default(PENDING)
+  availability      Json
+  contactInfo       Json
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  referrals         Referral[]
+  
+  @@index([screeningStatus])
+}
+
+model Referral {
+  id             String        @id @default(cuid())
+  escalationId   String        @unique
+  escalation     Escalation    @relation(fields: [escalationId], references: [id], onDelete: Cascade)
+  providerId     String
+  provider       Provider      @relation(fields: [providerId], references: [id])
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         ReferralStatus @default(PENDING)
+  contextSummary String
+  momConsent     Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  @@index([providerId, status])
+  @@index([status])
+  @@index([userId])
+}
+
+model ClinicalNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinicianId String
+  content   String
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([clinicianId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  resource  String
+  resourceId String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, endpoint])
+  @@index([userId])
+}

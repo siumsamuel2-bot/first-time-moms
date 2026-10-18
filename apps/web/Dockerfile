@@ -1,14 +1,27 @@
-FROM node:20-alpine AS base
+# Development stage
+FROM node:20-alpine AS development
 WORKDIR /app
-COPY package.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
+RUN corepack enable pnpm && pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
+EXPOSE 5173
+CMD ["pnpm", "--filter=@firstweeks/web", "dev"]
 
-FROM node:20-alpine AS runner
+# Build stage
+FROM node:20-alpine AS builder
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=base /app/apps/web/.next/standalone ./
-COPY --from=base /app/apps/web/.next/static ./apps/web/.next/static
-EXPOSE 3000
-CMD ["node", "apps/web/server.js"]
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
+RUN corepack enable pnpm && pnpm install --frozen-lockfile --prod=false
+COPY . .
+RUN pnpm --filter=@firstweeks/web build
+
+# Production stage
+FROM nginx:alpine AS production
+COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,329 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday 2 AM
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_API: ${{ github.repository }}/api
+  IMAGE_NAME_WEB: ${{ github.repository }}/web
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Lint
+        run: pnpm lint
+      
+      - name: Typecheck
+        run: pnpm typecheck
+      
+      - name: Unit tests
+        run: pnpm test:unit
+
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/nodejs
+          generateSarif: true
+      
+      - name: Upload Semgrep results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
+  trufflehog:
+    name: TruffleHog Secrets Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --fail --json
+
+  build-api:
+    name: Build API
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata for API
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push API
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          target: production
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-web:
+    name: Build Web
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata for Web
+        id: meta-web
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Web
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          target: production
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  test-integration:
+    name: Integration Tests
+    needs: [build-api, build-web]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Start services
+        run: docker compose up -d
+      
+      - name: Wait for services
+        run: |
+          sleep 10
+          curl -f http://localhost:8080/healthz || exit 1
+      
+      - name: Run integration tests
+        run: pnpm --filter=@firstweeks/api test:integration
+      
+      - name: Run E2E tests
+        run: pnpm --filter=@firstweeks/web test:e2e
+      
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
+
+  security-scan:
+    name: Security Scan
+    needs: [build-api, build-web]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          scan-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest'
+          format: 'sarif'
+          output: 'trivy-api.sarif'
+      
+      - name: Run Trivy vulnerability scanner (web)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          scan-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}:latest'
+          format: 'sarif'
+          output: 'trivy-web.sarif'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-api.sarif'
+      
+      - name: Upload Trivy results to GitHub Security (web)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-web.sarif'
+
+  deploy-staging:
+    name: Deploy to Staging (Oracle Cloud)
+    needs: [test-integration, security-scan, semgrep, trufflehog]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    defaults:
+      run:
+        working-directory: infra/terraform/environments/oci-staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Install OCI CLI
+        uses: oracle-actions/setup-oci-cli@v1
+        with:
+          version: '3.44.0'
+
+      - name: Configure OCI credentials
+        run: |
+          mkdir -p ~/.oci
+          printf '%s\n' "${{ secrets.OCI_CONFIG }}" > ~/.oci/config
+          printf '%s\n' "${{ secrets.OCI_PRIVATE_KEY }}" > ~/.oci/private_key.pem
+          chmod 600 ~/.oci/private_key.pem
+
+      - name: Write terraform.tfvars
+        run: |
+          cat > terraform.tfvars <<EOF
+          tenancy_id = "${{ secrets.OCI_TENANCY_OCID }}"
+          compartment_id = "${{ secrets.OCI_COMPARTMENT_OCID }}"
+          namespace = "${{ secrets.OCI_NAMESPACE }}"
+          ssh_public_key = "${{ secrets.SSH_PUBLIC_KEY }}"
+          jwt_secret = "${{ secrets.JWT_SECRET }}"
+          push_vapid_public_key = "${{ secrets.PUSH_VAPID_PUBLIC_KEY }}"
+          push_vapid_private_key = "${{ secrets.PUSH_VAPID_PRIVATE_KEY }}"
+          analytics_salt = "${{ secrets.ANALYTICS_SALT }}"
+          certificate_name = "${{ secrets.OCI_CERTIFICATE_NAME }}"
+          domain = "api.staging.firstweeks.app"
+          api_image = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest"
+          web_image = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}:latest"
+          alarm_email = "${{ secrets.ALARM_EMAIL }}"
+          EOF
+
+      - name: Terraform init
+        run: terraform init -backend-config=backend.hcl
+
+      - name: Terraform apply (roll app instances with latest images)
+        run: terraform apply -auto-approve
+
+      - name: Smoke test staging
+        run: |
+          LB_IP=$(terraform output -raw load_balancer_ip)
+          echo "Load balancer IP: $LB_IP"
+          curl -f --retry 5 --retry-delay 10 "http://$LB_IP/healthz" || exit 1
+
+  deploy-production:
+    name: Deploy to Production (AWS)
+    needs: [test-integration, security-scan, semgrep, trufflehog]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Pull latest images
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}:latest
+      
+      - name: Tag and push to ECR
+        run: |
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME_API }}:latest
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}:latest ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME_WEB }}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME_API }}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME_WEB }}:latest
+      
+      - name: Update ECS services
+        run: |
+          aws ecs update-service --cluster production-firstweeks --service production-firstweeks-api --force-new-deployment
+          aws ecs update-service --cluster production-firstweeks --service production-firstweeks-web --force-new-deployment
+      
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable --cluster production-firstweeks --services production-firstweeks-api production-firstweeks-web
+      
+      - name: Smoke test production
+        run: |
+          sleep 30
+          curl -f https://app.firstweeks.app/healthz
+          curl -f https://app.firstweeks.app

@@ -1,0 +1,19 @@
+# Staging Terraform Variables
+# Copy to staging/terraform.tfvars and fill in real values.
+# NEVER commit terraform.tfvars to version control.
+
+region                = "us-east-1"
+github_repo           = "your-org/firstweeks"
+certificate_arn       = "arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+api_image             = "123456789012.dkr.ecr.us-east-1.amazonaws.com/firstweeks/api:staging"
+web_image             = "123456789012.dkr.ecr.us-east-1.amazonaws.com/firstweeks/web:staging"
+jwt_secret            = "your-staging-jwt-secret-min-32-chars"
+push_vapid_public_key = "your-vapid-public-key"
+push_vapid_private_key = "your-vapid-private-key"
+alarm_email           = "alerts@firstweeks.app"
+
+# Optional: Override defaults (staging uses smaller instances)
+# db_instance_class     = "db.t3.micro"
+# api_desired_count     = 1
+# web_desired_count     = 1
+# backup_retention_days = 7

@@ -1,6 +1,7 @@
-variable "compartment_ocid" {
-  description = "Compartment OCID"
+variable "region" {
+  description = "AWS region"
   type        = string
+  default     = "us-east-1"
 }
 
 variable "environment" {
@@ -9,11 +10,7 @@ variable "environment" {
 }
 
 variable "tags" {
-  description = "Freeform tags applied to all resources"
+  description = "Additional tags"
   type        = map(string)
-}
-
-variable "bucket_name" {
-  description = "Object Storage bucket name"
-  type        = string
+  default     = {}
 }

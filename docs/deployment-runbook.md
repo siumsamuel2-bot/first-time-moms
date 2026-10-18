@@ -45,3 +45,24 @@ Infrastructure: Oracle Cloud Always Free (per board decision 2026-09-30, see
 - No HIPAA BAA on any cloud free tier. Staging must not contain real PHI.
 - Production HIPAA posture is a separate workstream (BAA, encryption at rest,
   audit logging) and gates the pilot.
+
+## Automated apply (CI runner)
+
+The environment blocker (no host with `terraform` + `oci` CLI) is now solved by a
+GitHub Actions runner instead of a local shell:
+
+- `terraform validate` runs on every change under `infra/terraform/**`
+  (workflow `.github/workflows/terraform.yml`, target
+  `infra/terraform/environments/oci-staging`).
+- `.github/workflows/terraform-apply.yml` is a manual (`workflow_dispatch`)
+  runner that bootstraps the state bucket, `terraform init -backend-config=backend.hcl`,
+  plans, and (on `action=apply`) applies the OCI staging stack.
+
+Remaining human prerequisites (configure once in the repo's `staging` environment):
+
+1. Put this repo on GitHub (workflows live here; no remote currently exists).
+2. Add the `staging` environment secrets listed at the top of `terraform-apply.yml`.
+3. Point `api.staging.firstweeks.app` at the load balancer IP from `terraform output`.
+
+After that, provisioning is one click, zero local tooling.
+

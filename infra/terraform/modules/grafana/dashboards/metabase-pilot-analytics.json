@@ -1,0 +1,283 @@
+{
+  "name": "Firstweeks Pilot Analytics Dashboard",
+  "description": "Key metrics for Firstweeks postpartum support app pilot with 2 OB-GYN practices and 30 first-time mothers",
+  "collection_id": null,
+  "collection_preview": true,
+  "parameters": [],
+  "public_uuid": "firstweeks-pilot-analytics",
+  "made_public_by_id": null,
+  "points_of_interest": [],
+  "caveats": "Data is de-identified. User IDs are salted SHA-256 hashes. Dates generalized to week/month buckets. Small cell counts (<11) suppressed.",
+  "dashboardcards": [
+    {
+      "id": "dau-card",
+      "card_type": "metric",
+      "name": "Daily Active Users (DAU)",
+      "description": "Number of unique moms completing check-ins each day",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT DATE_TRUNC('day', c.createdAtWeek) as day, COUNT(DISTINCT c.userIdHash) as dau\nFROM firstweeks_analytics.checkins c\nWHERE c.export_date >= DATE_SUB(CURRENT_DATE, 30)\nGROUP BY DATE_TRUNC('day', c.createdAtWeek)\nORDER BY day DESC",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "scalar",
+      "visualization_settings": {
+        "metric.prefix": "",
+        "metric.suffix": "",
+        "scalar.color": "#10B981",
+        "graph.dimensions": ["day"],
+        "graph.metrics": ["dau"]
+      },
+      "row": 0,
+      "col": 0,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "retention-card",
+      "card_type": "metric",
+      "name": "Retention (D1, D7, D30)",
+      "description": "Percentage of moms returning at day 1, 7, and 30",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "WITH first_checkin AS (\n  SELECT userIdHash, MIN(createdAtWeek) as first_week\n  FROM firstweeks_analytics.checkins\n  GROUP BY userIdHash\n),\nreturning AS (\n  SELECT \n    f.userIdHash,\n    MAX(CASE WHEN c.weekPostpartum - f.first_week = 0 THEN 1 ELSE 0 END) as d1,\n    MAX(CASE WHEN c.weekPostpartum - f.first_week <= 7 THEN 1 ELSE 0 END) as d7,\n    MAX(CASE WHEN c.weekPostpartum - f.first_week <= 30 THEN 1 ELSE 0 END) as d30\n  FROM first_checkin f\n  JOIN firstweeks_analytics.checkins c ON c.userIdHash = f.userIdHash\n  GROUP BY f.userIdHash\n)\nSELECT \n  AVG(d1) * 100 as retention_d1,\n  AVG(d7) * 100 as retention_d7,\n  AVG(d30) * 100 as retention_d30\nFROM returning",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "table",
+      "visualization_settings": {
+        "table.column_formatting": {
+          "retention_d1": { "suffix": "%", "precision": 1 },
+          "retention_d7": { "suffix": "%", "precision": 1 },
+          "retention_d30": { "suffix": "%", "precision": 1 }
+        }
+      },
+      "row": 0,
+      "col": 6,
+      "size_x": 6,
+      "size_y": 6
+    },
+    {
+      "id": "checkin-completion-card",
+      "card_type": "metric",
+      "name": "Check-in Completion Rate by Week",
+      "description": "Average check-ins per user per week postpartum",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  c.weekPostpartum,\n  COUNT(DISTINCT c.userIdHash) as active_moms,\n  COUNT(*) as total_checkins,\n  ROUND(COUNT(*) * 1.0 / COUNT(DISTINCT c.userIdHash), 2) as avg_checkins_per_mom\nFROM firstweeks_analytics.checkins c\nWHERE c.weekPostpartum BETWEEN 0 AND 12\nGROUP BY c.weekPostpartum\nORDER BY c.weekPostpartum",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "line",
+      "visualization_settings": {
+        "graph.dimensions": ["weekPostpartum"],
+        "graph.metrics": ["avg_checkins_per_mom"],
+        "series.settings": [
+          { "field": "avg_checkins_per_mom", "name": "Avg Check-ins/Mom", "color": "#3B82F6" }
+        ],
+        "graph.series_order": ["avg_checkins_per_mom"],
+        "axis_options.x.name": "Week Postpartum",
+        "axis_options.y.name": "Avg Check-ins per Mom"
+      },
+      "row": 6,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 10
+    },
+    {
+      "id": "escalation-rate-card",
+      "card_type": "metric",
+      "name": "Escalation Rate per 100 Moms",
+      "description": "Escalations triggered by type, normalized per 100 enrolled moms",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  e.trigger,\n  COUNT(DISTINCT e.userIdHash) as escalated_moms,\n  COUNT(*) as total_escalations,\n  ROUND(COUNT(DISTINCT e.userIdHash) * 100.0 / (SELECT COUNT(DISTINCT userIdHash) FROM firstweeks_analytics.users), 1) as rate_per_100\nFROM firstweeks_analytics.escalations e\nGROUP BY e.trigger\nORDER BY rate_per_100 DESC",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "bar",
+      "visualization_settings": {
+        "graph.dimensions": ["trigger"],
+        "graph.metrics": ["rate_per_100"],
+        "series.settings": [
+          { "field": "rate_per_100", "name": "Rate per 100 Moms", "color": "#EF4444" }
+        ],
+        "axis_options.x.name": "Escalation Trigger",
+        "axis_options.y.name": "Rate per 100 Moms"
+      },
+      "row": 16,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 10
+    },
+    {
+      "id": "escalation-severity-card",
+      "card_type": "metric",
+      "name": "Escalation Severity Distribution",
+      "description": "Breakdown of escalations by severity level",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  e.severity,\n  COUNT(*) as count,\n  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 1) as pct\nFROM firstweeks_analytics.escalations e\nGROUP BY e.severity\nORDER BY \n  CASE e.severity \n    WHEN 'CRITICAL' THEN 1\n    WHEN 'HIGH' THEN 2\n    WHEN 'MEDIUM' THEN 3\n    WHEN 'LOW' THEN 4\n  END",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "pie",
+      "visualization_settings": {
+        "pie.colors": ["#EF4444", "#F97316", "#EAB308", "#10B981"],
+        "pie.label_field": "severity",
+        "pie.value_field": "count"
+      },
+      "row": 26,
+      "col": 0,
+      "size_x": 6,
+      "size_y": 10
+    },
+    {
+      "id": "referral-funnel-card",
+      "card_type": "metric",
+      "name": "Referral Conversion Funnel",
+      "description": "Progression from escalation to completed referral",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  r.status,\n  COUNT(DISTINCT r.userIdHash) as moms_count,\n  COUNT(*) as referrals_count\nFROM firstweeks_analytics.referrals r\nGROUP BY r.status\nORDER BY \n  CASE r.status \n    WHEN 'PENDING' THEN 1\n    WHEN 'MOM_CONSENTED' THEN 2\n    WHEN 'PROVIDER_NOTIFIED' THEN 3\n    WHEN 'APPOINTMENT_SCHEDULED' THEN 4\n    WHEN 'COMPLETED' THEN 5\n    WHEN 'DECLINED' THEN 6\n    WHEN 'EXPIRED' THEN 7\n  END",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "funnel",
+      "visualization_settings": {
+        "funnel.steps": [
+          { "name": "Pending", "field": "PENDING" },
+          { "name": "Mom Consented", "field": "MOM_CONSENTED" },
+          { "name": "Provider Notified", "field": "PROVIDER_NOTIFIED" },
+          { "name": "Appointment Scheduled", "field": "APPOINTMENT_SCHEDULED" },
+          { "name": "Completed", "field": "COMPLETED" }
+        ],
+        "series.settings": [
+          { "field": "referrals_count", "name": "Referrals" }
+        ]
+      },
+      "row": 26,
+      "col": 6,
+      "size_x": 6,
+      "size_y": 10
+    },
+    {
+      "id": "mood-trends-card",
+      "card_type": "metric",
+      "name": "Mood Trends by Week Postpartum",
+      "description": "Average sadness and anxiety scores over time",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  c.weekPostpartum,\n  ROUND(AVG(c.sadness), 2) as avg_sadness,\n  ROUND(AVG(c.anxiety), 2) as avg_anxiety,\n  ROUND(AVG(c.sleepDisruption), 2) as avg_sleep_disruption\nFROM firstweeks_analytics.checkins c\nWHERE c.weekPostpartum BETWEEN 0 AND 12\n  AND c.sadness IS NOT NULL\nGROUP BY c.weekPostpartum\nORDER BY c.weekPostpartum",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "line",
+      "visualization_settings": {
+        "graph.dimensions": ["weekPostpartum"],
+        "graph.metrics": ["avg_sadness", "avg_anxiety", "avg_sleep_disruption"],
+        "series.settings": [
+          { "field": "avg_sadness", "name": "Sadness (1-5)", "color": "#EF4444" },
+          { "field": "avg_anxiety", "name": "Anxiety (1-5)", "color": "#F97316" },
+          { "field": "avg_sleep_disruption", "name": "Sleep Disruption (1-5)", "color": "#3B82F6" }
+        ],
+        "axis_options.x.name": "Week Postpartum",
+        "axis_options.y.name": "Average Score",
+        "graph.y_axis.scale_type": "linear"
+      },
+      "row": 36,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 10
+    },
+    {
+      "id": "provider-match-card",
+      "card_type": "metric",
+      "name": "Provider Match Quality by Specialty",
+      "description": "Referral volume and completion rate by provider specialty",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  r.providerSpecialty[1] as primary_specialty,\n  COUNT(*) as referral_count,\n  COUNT(CASE WHEN r.status = 'COMPLETED' THEN 1 END) as completed_count,\n  ROUND(COUNT(CASE WHEN r.status = 'COMPLETED' THEN 1 END) * 100.0 / COUNT(*), 1) as completion_rate\nFROM firstweeks_analytics.referrals r\nWHERE r.providerSpecialty IS NOT NULL AND CARDINALITY(r.providerSpecialty) > 0\nGROUP BY r.providerSpecialty[1]\nORDER BY referral_count DESC",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "table",
+      "visualization_settings": {
+        "table.column_formatting": {
+          "completion_rate": { "suffix": "%", "precision": 1 }
+        },
+        "table.column_order": ["primary_specialty", "referral_count", "completed_count", "completion_rate"]
+      },
+      "row": 46,
+      "col": 0,
+      "size_x": 12,
+      "size_y": 10
+    },
+    {
+      "id": "cohort-demographics-card",
+      "card_type": "metric",
+      "name": "Cohort Demographics",
+      "description": "Delivery type and feeding method distribution",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  u.deliveryType,\n  u.feedingMethod,\n  COUNT(*) as count\nFROM firstweeks_analytics.users u\nGROUP BY u.deliveryType, u.feedingMethod\nORDER BY count DESC",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "table",
+      "visualization_settings": {
+        "table.column_order": ["deliveryType", "feedingMethod", "count"]
+      },
+      "row": 56,
+      "col": 0,
+      "size_x": 6,
+      "size_y": 8
+    },
+    {
+      "id": "risk-flags-card",
+      "card_type": "metric",
+      "name": "Risk Flags Prevalence",
+      "description": "Percentage of moms with each risk flag",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT \n  rf as risk_flag,\n  COUNT(DISTINCT userIdHash) as moms_with_flag,\n  ROUND(COUNT(DISTINCT userIdHash) * 100.0 / (SELECT COUNT(DISTINCT userIdHash) FROM firstweeks_analytics.users), 1) as prevalence_pct\nFROM firstweeks_analytics.users\nCROSS JOIN UNNEST(riskFlags) as t(rf)\nGROUP BY rf\nORDER BY prevalence_pct DESC",
+          "template-tags": {}
+        },
+        "database": 2
+      },
+      "display": "bar",
+      "visualization_settings": {
+        "graph.dimensions": ["risk_flag"],
+        "graph.metrics": ["prevalence_pct"],
+        "series.settings": [
+          { "field": "prevalence_pct", "name": "Prevalence %", "color": "#8B5CF6" }
+        ],
+        "axis_options.x.name": "Risk Flag",
+        "axis_options.y.name": "Prevalence %"
+      },
+      "row": 56,
+      "col": 6,
+      "size_x": 6,
+      "size_y": 8
+    }
+  ]
+}
