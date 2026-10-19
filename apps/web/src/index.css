@@ -21,6 +21,44 @@
     --ring: 172 71% 38%;
     --radius: 0.5rem;
   }
+
+  /*
+   * 3 AM Mode. Values mirror `src/lib/threeAM.ts` (ported from the archived
+   * design-system package). Applied by ThemeModeProvider via
+   * `document.documentElement.dataset.theme`.
+   */
+  [data-theme="night"] {
+    --background: 30 13% 9%; /* surface.canvas #1A1714 */
+    --foreground: 35 32% 90%; /* text.primary #EDE6DC */
+    --primary: 139 19% 58%; /* accent.sage #7FA88C */
+    --primary-foreground: 30 13% 9%;
+    --secondary: 34 9% 16%; /* surface.overlay #2B2824 */
+    --secondary-foreground: 35 32% 90%;
+    --muted: 34 9% 16%;
+    --muted-foreground: 33 12% 68%; /* text.secondary #B8AFA4 */
+    --accent: 36 11% 18%; /* surface.elevated #332F29 */
+    --accent-foreground: 35 32% 90%;
+    --destructive: 5 45% 61%; /* state.error #C97870 */
+    --destructive-foreground: 30 13% 9%;
+    --border: 36 11% 18%; /* border.subtle #332F29 */
+    --input: 34 10% 26%; /* border.strong #4A443C */
+    --ring: 139 19% 58%;
+
+    /* Non-HSL tokens consumed directly by night components. */
+    --three-am-surface-raised: #22201c;
+    --three-am-surface-elevated: #332f29;
+    --three-am-border-strong: #4a443c;
+    --three-am-accent-sage: #7fa88c;
+    --three-am-glow-calm: rgba(217, 168, 106, 0.16);
+    --three-am-glow-attention: rgba(217, 168, 106, 0.32);
+    --three-am-scrim: rgba(16, 14, 12, 0.64);
+    --three-am-brightness: 0.85;
+    --three-am-touch-min: 56px;
+    --three-am-touch-comfortable: 64px;
+    --three-am-touch-quick: 96px;
+    --three-am-gap: 16px;
+    --three-am-transition: 200ms;
+  }
 }
 
 @layer base {
@@ -30,6 +68,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv11", "ss01";
+    /* 3 AM Mode entry is a 200ms cross-fade, never a modal or toast. */
+    transition: background-color var(--three-am-transition, 200ms) ease, color
+      var(--three-am-transition, 200ms) ease;
   }
   html {
     -webkit-text-size-adjust: 100%;
@@ -45,6 +86,54 @@
   }
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* 3 AM Mode: 56px floor for tired hands and imprecise taps (spec §4). */
+  .night-touch {
+    min-height: var(--three-am-touch-min, 56px);
+    min-width: var(--three-am-touch-min, 56px);
+  }
+
+  /* 96px quick-action tiles with a 16px gap to prevent mis-taps. */
+  .night-quick-tile {
+    min-height: var(--three-am-touch-quick, 96px);
+    border-radius: 20px;
+    border: 1px solid hsl(var(--border));
+    background-color: var(--three-am-surface-raised, hsl(var(--accent)));
+    color: hsl(var(--foreground));
+    transition: background-color var(--three-am-transition, 200ms) ease, border-color
+      var(--three-am-transition, 200ms) ease;
+  }
+
+  .night-quick-tile:active {
+    background-color: var(--three-am-surface-elevated, hsl(var(--accent)));
+  }
+
+  /* Cards read as raised surfaces at night, never pure white. */
+  [data-theme="night"] .theme-night-card {
+    background-color: var(--three-am-surface-raised);
+    border-color: var(--three-am-border-strong);
+  }
+
+  /* Ambient awareness replaces notifications: a quiet 4 cpm breath, fades only. */
+  .night-glow-calm {
+    box-shadow: 0 0 0 0 var(--three-am-glow-none, transparent);
+    animation: nightGlowBreath 15s ease-in-out infinite;
+  }
+
+  @keyframes nightGlowBreath {
+    0%,
+    100% {
+      box-shadow: 0 0 0 1px transparent;
+    }
+    50% {
+      box-shadow: 0 0 24px 2px var(--three-am-glow-calm);
+    }
+  }
+
+  /* Nothing glows around the crisis entry point — ever (spec §5). */
+  .theme-night-card.night-glow-calm:has([data-testid="crisis-entry-point"]) {
+    animation: none;
   }
 }
 

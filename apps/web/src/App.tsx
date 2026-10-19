@@ -1,6 +1,7 @@
 import { Layout } from '@/components/Layout';
 import { ToastProviderComponent } from '@/components/ui/toaster';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ThemeModeProvider } from '@/context/ThemeModeContext';
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
@@ -280,10 +281,12 @@ function AppRoutes() {
 
 export function App() {
   return (
-    <AuthProvider>
-      <ToastProviderComponent>
-        <AppRoutes />
-      </ToastProviderComponent>
-    </AuthProvider>
+    <ThemeModeProvider>
+      <AuthProvider>
+        <ToastProviderComponent>
+          <AppRoutes />
+        </ToastProviderComponent>
+      </AuthProvider>
+    </ThemeModeProvider>
   );
 }

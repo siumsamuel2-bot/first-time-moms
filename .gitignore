@@ -19,6 +19,7 @@ override.tf.json
 node_modules/
 dist/
 build/
+.next/
 *.tsbuildinfo
 
 # Package managers

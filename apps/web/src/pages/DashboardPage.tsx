@@ -1,6 +1,8 @@
+import { ThreeAMHome } from '@/components/ThreeAMHome';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { useThemeMode } from '@/context/ThemeModeContext';
 import { ApiError, checkinApi, onboardingApi } from '@/lib/api';
 import { cn, getRiskColor } from '@/lib/utils';
 
@@ -31,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 
 export function DashboardPage() {
   const navigate = useNavigate();
+  const { isNight } = useThemeMode();
   const [profile, setProfile] = useState<RecoveryProfileData | null>(null);
   const [hasCheckInToday, setHasCheckInToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,6 +78,19 @@ export function DashboardPage() {
   }
 
   if (!profile) return null;
+
+  /* 3 AM Mode is a different interaction posture, not a theme port (spec §3). */
+  if (isNight) {
+    return (
+      <ThreeAMHome
+        onQuickLog={(kind) => {
+          if (kind !== 'skip') navigate('/check-in');
+        }}
+        onCheckIn={() => navigate('/check-in')}
+        onCrisis={() => navigate('/providers')}
+      />
+    );
+  }
 
   const weeksPostpartum = profile.weeksPostpartum;
 
